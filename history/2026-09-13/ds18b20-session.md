@@ -102,3 +102,11 @@ Family 0 ... is not registered.
 현재 3선 외부전원 구성은 VDD→P1 3.3V, DQ→P7, GND→P6입니다. 저항은 P1 3.3V와 P7/DQ 신호 접점 사이에 연결합니다. 직렬 저항이 아니며 극성은 없습니다.
 전원을 종료·분리한 뒤 배선하고, DATA를 5V로 풀업하지 않도록 안내합니다.
 근거: [DS18B20 데이터시트 Figure 7](https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf).
+
+## H. 사용자 풀업 연결 후 재점검 (18:33 전후 KST)
+
+사용자가 안내한 풀업 저항 연결을 완료했다고 보고했습니다. Jetson uptime 약 6분으로 재부팅된 환경에서 확인했습니다.
+`wire`, `w1_gpio`가 로드되어 있고 P7 gpiochip0 line144는 onewire/open-drain으로 사용 중입니다. 활성 DT의 P7 tristate=0/input=1/rsvd2 설정도 유지됩니다.
+이번에는 이전의 00-… ID가 없으며 `w1_master_slave_count=0`, `w1_master_slaves=not found.`입니다. 조회 시 탐색 시도는 40회, search=-1(계속 탐색)이었습니다. 정상 28-… 센서와 온도는 아직 없습니다.
+이번 부팅 로그에는 이전의 family0 가짜 ID·max_slave_count 오류가 관찰되지 않았습니다. 풀업 추가 후 탐색 양상이 달라졌으나 센서 통신 성공을 뜻하지 않습니다.
+다음은 DS18 DATA–GND 실제 전압 확인으로 풀업 경로와 신호 상태를 검증합니다. 이 점검 중 P7/드라이버 설정 변경은 하지 않았습니다.
