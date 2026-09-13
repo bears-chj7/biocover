@@ -1,0 +1,110 @@
+{
+  "time_label": "2026-09-13 17:35 KST (approximate)",
+  "method": "check_sensors.py; 10 samples per channel at each of 100kHz and 500kHz",
+  "adc_raw": {
+    "100000": {
+      "CH0": [
+        211,
+        210,
+        209,
+        211,
+        213,
+        211,
+        211,
+        207,
+        209,
+        210
+      ],
+      "CH1": [
+        153,
+        150,
+        153,
+        155,
+        149,
+        150,
+        150,
+        150,
+        153,
+        150
+      ],
+      "CH4": [
+        803,
+        807,
+        804,
+        809,
+        804,
+        804,
+        803,
+        804,
+        804,
+        804
+      ]
+    },
+    "500000": {
+      "CH0": [
+        211,
+        210,
+        210,
+        214,
+        210,
+        211,
+        209,
+        209,
+        211,
+        209
+      ],
+      "CH1": [
+        152,
+        150,
+        151,
+        154,
+        152,
+        153,
+        150,
+        150,
+        150,
+        154
+      ],
+      "CH4": [
+        804,
+        804,
+        803,
+        804,
+        805,
+        804,
+        804,
+        804,
+        804,
+        804
+      ]
+    }
+  },
+  "dht22": {
+    "edges": [
+      52,
+      47,
+      45
+    ],
+    "valid_frames": 0,
+    "temperature_C": null,
+    "humidity_pct": null
+  },
+  "ds18b20": {
+    "devices": [
+      "00-700000000000",
+      "00-f00000000000"
+    ],
+    "family_28_detected": false,
+    "temperature_C": null,
+    "loaded_modules": [
+      "wire",
+      "w1_gpio"
+    ]
+  },
+  "excluded_unconnected": [
+    "MQ-4 #3",
+    "MQ-4 #4",
+    "CM1106"
+  ],
+  "system_configuration_changed": false
+}
