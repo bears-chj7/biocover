@@ -7,14 +7,67 @@
 비정상 종료에 대비해 측정마다 CSV를 기록하고 재시작 시 복구한다.
 [설치·사용·저장 동작과 검증 안내](docs/dashboard.md)
 
+### 1. 최초 설치 — 한 번만
+
+현재 Jetson에 준비된 UNO USB 드라이버와 Flask 환경을 사용한다.
+아래 명령은 어느 디렉터리에서든 실행할 수 있다.
+
 ```bash
-sudo python3 scripts/install_dashboard.py
+sudo python3 /home/judgejack/working_space/biocover/scripts/install_dashboard.py
 ```
 
-설치는 한 번만 실행한다. 웹서비스는 부팅 시 자동 실행하지 않는다.
-필요할 때 `sudo systemctl start biocover-web.service`로 시작하고
-Jetson에서 http://127.0.0.1:8080 접속. 종료는 `sudo systemctl stop biocover-web.service`.
-기존 자동 CSV 서비스는 설치기가 해제한다.
+설치기는 기존 `biocover-uno.service` 자동 CSV 수집을 해제하고 웹서비스를 등록한다.
+**설치 직후 웹서비스는 중지 상태이며, 재부팅해도 자동 실행하지 않는다.**
+매번 사용할 때 설치 명령을 다시 실행할 필요는 없다.
+
+이전에 자동 실행 방식으로 설치했다면 위 최신 설치기를 다시 실행해 수동 방식으로
+전환하거나, 부팅 자동 실행만 해제하려면 아래 명령을 한 번 실행한다.
+
+```bash
+sudo systemctl disable --now biocover-web.service
+```
+
+### 2. 웹서버 실행 — 사용할 때마다
+
+```bash
+sudo systemctl start biocover-web.service
+```
+
+Jetson의 브라우저에서 **[http://127.0.0.1:8080](http://127.0.0.1:8080)** 을 연다.
+로그인은 없으며 Jetson 로컬에서 접속한다. **웹서버 실행만으로 측정·CSV 기록은 시작되지 않는다.**
+
+### 3. 화면에서 측정 제어
+
+| 버튼 | 동작 |
+|---|---|
+| 시작 | 새 측정 세션을 열고 5초마다 최신 센서값·로그·그래프·CSV를 기록 |
+| 일시정지 | 같은 세션을 유지하며 새 측정 행과 CSV 기록을 일시 중단 |
+| 재개 | 같은 세션에 최신 측정값부터 이어서 기록 |
+| 정지 · 저장 | 측정을 종료하고 CSV를 마무리. 웹서버는 계속 실행 |
+
+CSV는 `data/web/`에 UTC 타임스탬프 이름으로 생성된다. 종료한 파일은 화면의
+**저장된 세션**에서 다운로드할 수 있다. 비정상 종료 복구를 위해 측정 중에도
+매 행을 디스크에 기록하며, 시작 전에는 측정 CSV를 만들지 않는다.
+브라우저 연결이 45초 넘게 끊기면 측정을 종료하고 저장한다.
+
+### 4. 웹서버 종료 — 사용을 마쳤을 때
+
+```bash
+sudo systemctl stop biocover-web.service
+```
+
+웹사이트 제공을 종료한다. 진행 중인 측정이 있으면 CSV를 마무리한다.
+기존 저장 파일은 삭제하지 않는다. 다음 사용 시에는 2번 실행 명령만 입력한다.
+
+### 상태·오류 확인
+
+```bash
+systemctl status biocover-web.service --no-pager
+journalctl -u biocover-web.service -n 30 --no-pager
+```
+
+`active (running)`이면 웹서버 실행 중, `inactive (dead)`이면 중지 상태다.
+설치·서비스 명령의 sudo 비밀번호는 Jetson 사용자 계정 비밀번호다.
 
 ## 보드·센서 연결 그림
 
