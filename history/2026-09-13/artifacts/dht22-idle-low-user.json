@@ -1,0 +1,9 @@
+{
+  "source": "user terminal output",
+  "settle_ms": 2100,
+  "idle_high_samples": 0,
+  "idle_low_samples": 100,
+  "mmio_writes": false,
+  "result": "P15 not stably HIGH after settling; stopped before start pulse",
+  "next_check": "Module-side VCC relative to GND and actual label-based wiring; no sensor fault conclusion"
+}
