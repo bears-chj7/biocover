@@ -58,6 +58,20 @@ int main(void){
         fprintf(stderr,"Unexpected P15 config: 0x%x ctl=0x%x; no MMIO writes.\n",cfg,ctl);
         munmap(map,(size_t)page);close(mem);close(req.fd);close(chip);return 1;
     }
+    /* Acquiring INPUT can release an old LOW and itself trigger a response.
+     * Let that response finish and honor the sensor's inter-read interval. */
+    pause_ns(2100000000L);
+    unsigned idle_high=0,idle_low=0;
+    for(int i=0;i<100&&!stop;i++){
+        if(reg[2]&1)idle_high++;else idle_low++;
+        pause_ns(100000L);
+    }
+    printf("{\"settle_ms\":2100,\"idle_high_samples\":%u,\"idle_low_samples\":%u}\n",idle_high,idle_low);
+    fflush(stdout);
+    if(stop || idle_low){
+        fputs("P15 not stably HIGH after settling; no MMIO writes. Check signal/power/pull-up.\n",stderr);
+        munmap(map,(size_t)page);close(mem);close(req.fd);close(chip);return stop?130:1;
+    }
     struct gpiohandle_data sample={0};
     if(ioctl(req.fd,GPIOHANDLE_GET_LINE_VALUES_IOCTL,&sample)||sample.values[0]!=(reg[2]&1)){
         fputs("GPIO/MMIO input mismatch; no MMIO writes.\n",stderr);
