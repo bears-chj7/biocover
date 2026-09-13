@@ -25,3 +25,8 @@ P15는 gpiochip0 line 85 (PN.01), P7은 line 144 (PAC.06)입니다.
 MCP3008 VREF/VDD가 3.3V이므로 ADC 입력 범위를 0~3.3V로 제한해야 합니다.
 MQ-4 AOUT의 분압 유무 및 실제 최대 전압은 아직 확인되지 않았습니다.
 참고: [Microchip MCP3008 데이터시트](https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP3004-MCP3008-Data-Sheet-DS20001295.pdf).
+
+## 사용자 추가 확인
+
+2026-09-13: DS18B20 DATA 풀업 저항이 실제로 미연결이라고 확인됨. DATA(P7)–3.3V(P1)에 4.7kΩ 저항 추가 안내, 연결 완료는 아직 미확인.
+DHT22는 사용자 Arduino 환경에서 정상 읽기 보고. Jetson 측 유효 프레임 확보는 계속 미완료.

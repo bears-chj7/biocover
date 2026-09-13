@@ -94,3 +94,11 @@ Family 0 ... is not registered.
 `pull=0`, `tristate=0`, `enable-input=1`, `function=rsvd2`, `gpio-mode=0`, `open-drain=0`입니다.
 의도한 P7 pinmux 필드는 반영되어 있습니다. 하드웨어 open-drain 비트와 GPIO 라이브러리의 오픈드레인 에뮬레이션을 구분해야 하므로 open-drain=0만으로 실패 원인이라고 결론내리지 않습니다.
 이 조회는 풀업 저항의 실제 장착이나 DATA 파형을 확인한 결과가 아닙니다. 정상 ID 탐색 문제는 미해결입니다.
+
+## G. 사용자 확인: 풀업 저항 미연결
+
+사용자가 DS18B20을 ‘DS18’로 줄여 부르기로 했으며 DATA 풀업 저항이 연결되지 않았다고 확인했습니다.
+이는 기존 저항 유무 미확인을 갱신하는 진술입니다. DATA–3.3V 사이 4.7kΩ 추가를 안내했고, 실제 연결·재검사 완료는 아직 아닙니다.
+현재 3선 외부전원 구성은 VDD→P1 3.3V, DQ→P7, GND→P6입니다. 저항은 P1 3.3V와 P7/DQ 신호 접점 사이에 연결합니다. 직렬 저항이 아니며 극성은 없습니다.
+전원을 종료·분리한 뒤 배선하고, DATA를 5V로 풀업하지 않도록 안내합니다.
+근거: [DS18B20 데이터시트 Figure 7](https://www.analog.com/media/en/technical-documentation/data-sheets/ds18b20.pdf).

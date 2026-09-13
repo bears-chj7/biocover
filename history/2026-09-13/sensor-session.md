@@ -69,3 +69,12 @@ P7·부팅·커널 설정은 변경하지 않았으며 P15는 종료 시 입력�
 [진단 요약](artifacts/dht22-events-diagnostic.json)을 보관했습니다.
 
 동시에 사용자에게 DS18B20 DATA–3.3V의 실제 4.7kΩ 풀업 연결/모듈 내장 여부를 질문했습니다. 답변 전에는 저항 존재를 가정하지 않습니다.
+
+## 사용자 Arduino 정상 동작 보고와 DHT 구현 비교
+
+사용자는 같은 DHT22가 Arduino에서 정상적으로 읽힌다고 보고했습니다. 현재 세션이 Arduino 측정을 직접 수행한 것은 아닙니다.
+로컬 project/working_space/Arduino/Documents/Desktop의 대상 파일 검색에서는 사용자 Arduino 스케치가 발견되지 않았습니다.
+대신 [Adafruit Arduino DHT 라이브러리 구현](https://raw.githubusercontent.com/adafruit/DHT-sensor-library/master/DHT.cpp)을 확인했습니다. 사용자가 이 라이브러리를 썼다고 단정하지 않습니다.
+
+해당 구현은 DHT22 시작 LOW 약 1100µs, 입력 전환 후 짧은 대기, 인터럽트 억제 구간에서 응답과 40비트 펄스 측정, LOW/HIGH 길이 비교와 체크섬 검증을 수행합니다. AVR에서는 포트 레지스터를 직접 읽습니다.
+Jetson 진단의 사용자 공간 ioctl 전환·스케줄링·IRQ 처리와 실행 조건이 다릅니다. Arduino 정상 동작 보고는 Jetson 수신 경로·전원/신호 조건을 우선 검토할 근거이지만 Jetson 배선까지 정상임을 보장하지는 않습니다.
