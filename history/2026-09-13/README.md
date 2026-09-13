@@ -38,6 +38,8 @@
 
 ## 상세 문서
 
+- [웹 대시보드 구현·검증 및 설치 대기](web-dashboard.md)
+
 - [USB 전환과 재부팅 이후 최신 값·남은 작업](usb-and-current-status.md)
 - [P7/P15 OS 감사와 TXB0108 원인 분석](gpio-os-audit.md)
 

@@ -1,5 +1,18 @@
 # 바이오커버 메탄 산화 측정 실험
 
+## 센서 웹 대시보드
+
+흰색 화면에서 시작/일시정지/재개/정지, 5초 측정 로그, 최근 구간 그래프,
+평균·최솟값·최댓값과 CSV 다운로드를 제공한다. **시작 버튼을 누를 때만 기록한다.**
+비정상 종료에 대비해 측정마다 CSV를 기록하고 재시작 시 복구한다.
+[설치·사용·저장 동작과 검증 안내](docs/dashboard.md)
+
+```bash
+sudo python3 scripts/install_dashboard.py
+```
+
+설치 후 Jetson에서 http://127.0.0.1:8080 접속. 기존 자동 CSV 서비스는 설치기가 해제한다.
+
 ## 보드·센서 연결 그림
 
 ![현재 Jetson·UNO·MCP3008 센서 구성](docs/diagrams/system-overview.svg)
