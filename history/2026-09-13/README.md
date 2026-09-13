@@ -4,6 +4,9 @@
 
 ## 세션 구분
 
+**최신 상태:** [GPIO 반복 진단 → USB 전환 → 재부팅 검증 → 저장 정책 변경](usb-and-current-status.md).
+아래 초기 타임라인과 문서의 미해결 표기는 당시 상태이며 최신 결과는 위 문서를 우선한다.
+
 - **센서·저장소 세션:** SPI/ADC, DHT22, Git 저장소와 실험 개요를 관리한 현재 세션.
 - **DS18B20 세션:** `/home/judgejack/project/ds18b20`에서 외부 모듈과 통합 오버레이를 준비한 다른 로컬 Codex 세션.
 - **사용자:** 관리자 권한이 필요한 명령과 재부팅을 직접 수행.
@@ -34,6 +37,9 @@
 | 통합 history 작성 | 센서 세션 | 다른 세션 제공 인계·실제 파일·설치 증거·후속 실패를 날짜별 기록으로 통합 |
 
 ## 상세 문서
+
+- [USB 전환과 재부팅 이후 최신 값·남은 작업](usb-and-current-status.md)
+- [P7/P15 OS 감사와 TXB0108 원인 분석](gpio-os-audit.md)
 
 - [센서·SPI·DHT22 작업](sensor-session.md)
 - [DS18B20 빌드·설치·후속 검증](ds18b20-session.md)

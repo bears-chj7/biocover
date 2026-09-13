@@ -31,3 +31,7 @@ sudo grep -i -A 14 'soc_gpio59_pac6' /sys/kernel/debug/pinctrl/2430000.pinmux/pi
 DS18B20 원래 준비 파일은 `/home/judgejack/project/ds18b20`에 유지합니다. 이력 사본은 원본 작업 디렉터리를 대체하지 않습니다. 같은 부팅 설정을 수정하는 경우 다른 세션의 최신 변경과 비교한 뒤 진행해야 합니다.
 
 최신 사용자 보고: DS18 풀업 연결 완료, DHT22 실제 전원 P1 공유·3.4V 실측. DHT22 점검은 보류하고 DS18을 먼저 진행합니다. 18:33 전후 재검사에서 DS18은 장치 0개였습니다.
+# 최신 상태 안내
+
+이 문서의 초기 GPIO 진단 상태 이후 UNO USB 수신, 영구 설치 및 재부팅 후
+수집 재개를 확인했다. [현재 상태와 저장 정책](usb-and-current-status.md)을 우선한다.

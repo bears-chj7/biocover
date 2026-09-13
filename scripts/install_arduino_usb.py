@@ -4,6 +4,7 @@
 No changes to SPI, pinmux or /boot. Existing files are backed up before writes.
 Requires sudo; only supports the current validated Jetson kernel and account.
 """
+import argparse
 import csv
 from datetime import datetime, timezone
 import json
@@ -24,6 +25,10 @@ def run(*args, check=True):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--enable-logging', action='store_true',
+                        help='explicitly opt into boot-time CSV recording')
+    args = parser.parse_args()
     if os.geteuid() != 0:
         raise SystemExit('Run with sudo.')
     if os.uname().release != KERNEL:
@@ -128,6 +133,10 @@ WantedBy=multi-user.target
     if len(matches) != 1:
         raise SystemExit('Expected one CH340 tty. Files installed; reconnect UNO and rerun. Service not started.')
     run('systemctl', 'daemon-reload')
+    if not args.enable_logging:
+        run('systemctl', 'disable', '--now', UNIT)
+        print('USB setup installed. Automatic CSV recording disabled by default.')
+        return
     run('systemctl', 'enable', UNIT)
     before = set(directory.glob('uno-*.csv'))
     run('systemctl', 'restart', UNIT)
