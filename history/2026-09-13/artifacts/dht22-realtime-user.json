@@ -1,0 +1,44 @@
+{
+  "source": "user terminal output",
+  "command": "sudo timeout 20s chrt -f 50 taskset -c 2 /home/judgejack/working_space/biocover/build/dht22_events",
+  "arduino_supply_V": 5,
+  "jetson_supply_V_reported_wiring": 3.3,
+  "attempts": [
+    {
+      "attempt": 1,
+      "config_us": 420.9,
+      "event_count": 49,
+      "sequence_gaps": 0,
+      "valid": false
+    },
+    {
+      "attempt": 2,
+      "config_us": 747.3,
+      "event_count": 6,
+      "sequence_gaps": 0,
+      "valid": false
+    },
+    {
+      "attempt": 3,
+      "config_us": 703.7,
+      "event_count": 36,
+      "sequence_gaps": 0,
+      "valid": false
+    },
+    {
+      "attempt": 4,
+      "config_us": 661.3,
+      "event_count": 7,
+      "sequence_gaps": 0,
+      "valid": false
+    },
+    {
+      "attempt": 5,
+      "config_us": 311.6,
+      "event_count": 0,
+      "sequence_gaps": 0,
+      "valid": false
+    }
+  ],
+  "conclusion": "FIFO priority 50 and CPU2 affinity did not produce a valid frame; root cause not established."
+}
