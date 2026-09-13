@@ -226,11 +226,11 @@ gcc -O2 -Wall -Wextra -Werror -o build/dht22_events scripts/dht22_events.c
 
 추가 원인 분리용 `scripts/dht22_mmio.c`는 이 Orin Nano 보드의 P15 제어 레지스터에 직접 접근하는 관리자 전용 진단입니다. GPIO 점유·보드 식별·입력 상태를 확인하고 실행 후 복원하며, SPI·DS18·pinmux를 수정하지 않습니다. 컴파일만 검증됐고 실제 실행 결과는 아직 대기 중입니다. 일반 수집 프로그램으로 사용하지 않습니다.
 
-### DS18 RESET 응답 검사 (관리자용, 실행 검증 대기)
+### DS18 RESET 응답 검사 (관리자용, 센서 응답 미검출)
 
 ```bash
 gcc -O2 -Wall -Wextra -Werror -o build/ds18_presence scripts/ds18_presence.c
 sudo python3 scripts/check_ds18_presence.py
 ```
 
-현재 Orin Nano/5.15.148-tegra/P7 전용입니다. P7의 w1-gpio 연결을 잠시 해제하고 초기화 응답만 관찰한 뒤 복구합니다. SPI·P15·부팅 설정은 건드리지 않습니다. 아직 빌드·문법 검사만 완료했습니다. 단독 C 바이너리 실행 대신 복구 처리가 있는 Python 래퍼를 사용합니다.
+현재 Orin Nano/5.15.148-tegra/P7 전용입니다. P7의 w1-gpio 연결을 잠시 해제하고 초기화 응답만 관찰한 뒤 복구합니다. SPI·P15·부팅 설정은 건드리지 않습니다. 사용자 실행에서 P7 LOW 구동은 확인됐지만 초기화 응답 후보는 3회 모두 미검출, 드라이버 복구는 성공했습니다. 온도·ROM 검증은 미완료입니다. 단독 C 바이너리 실행 대신 복구 처리가 있는 Python 래퍼를 사용합니다.

@@ -120,3 +120,12 @@ Family 0 ... is not registered.
 P7 주소는 0x022102c0 (GPIO base0x02210000 + AC bank0/port1 + pin6*0x20)입니다. SPI·DHT22·pinmux·부팅 파일·설치 모듈은 변경하지 않습니다. CPU2/FIFO50 검사 프로세스는 8초 제한이며 종료 처리를 거친 뒤 드라이버 복구합니다.
 
 C 빌드(-O2 -Wall -Wextra -Werror)와 Python 문법 검사 성공. 실제 실행은 아직 하지 않았으며 사용자 관리자 실행 대기입니다. presence_candidate는 초기화 응답 후보이지 온도·ROM CRC 검증 완료를 뜻하지 않습니다.
+
+## J. 사용자 RESET 응답 검사 결과
+
+`check_ds18_presence.py` 실행 결과 P7 idle=1, 세 번 모두 driven_low=true, 해제 후 관측 구간은 HIGH 유지, presence_candidate=false입니다.
+마지막 `w1-gpio restored: True`로 드라이버 복구를 확인했습니다. [사용자 결과](artifacts/ds18-presence-user.json).
+
+이 결과는 MCU GPIO 입력 레지스터에서 LOW 구동과 HIGH 복귀를 읽었다는 뜻이며, 센서 단자에서 동일 파형을 오실로스코프로 확인한 것은 아닙니다. 센서의 초기화 응답은 관측되지 않았습니다.
+온도 파싱·w1_therm 이후 단계까지 진행하지 않았으므로 추가 파서 수정으로 해결됐다고 볼 수 없습니다. 센서 DATA 경로·실제 케이블 선 역할·접촉·센서 자체 및 테스트 타이밍 가능성을 구분해야 합니다.
+다음은 방수 프로브의 선 색상별 실제 VDD/DATA/GND 연결과 제조사 핀 정의 확인입니다. 색상 관례만으로 선을 재배치하지 않습니다. 센서 고장으로 확정하지 않았습니다.
