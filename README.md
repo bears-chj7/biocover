@@ -21,6 +21,7 @@
 | DS18B20 | P7 연결. 외부 모듈 wire·w1_gpio 로드, w1_therm 설치. 정상 28-… ID 미검출, 온도 미확보 |
 | CM1106 | **미연결** |
 
+- [날짜별 통합 작업 이력](history/README.md) — 다른 DS18B20 세션 포함
 - [세부 배선표](docs/wiring.md)
 - [센서 점검 및 설정 변경 기록](docs/2026-09-13-check.md)
 - [DHT22 오버레이 소스·적용·복원 절차](hardware/overlays/README.md)

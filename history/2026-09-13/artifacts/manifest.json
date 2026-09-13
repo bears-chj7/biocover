@@ -1,0 +1,169 @@
+{
+  "recorded_at": "2026-09-13T17:33:12.194414+09:00",
+  "source_directory": "/home/judgejack/project/ds18b20",
+  "kernel_release": "5.15.148-tegra",
+  "description": "Read-only local evidence. Hashes do not establish upstream provenance or sensor correctness.",
+  "files": [
+    {
+      "path": "/boot/ds18b20-backup-20260913-171755/extlinux.conf",
+      "bytes": 1350,
+      "sha256": "3e583c96032261185cb02007ca2f383d699cc346857e0da78079910ac0554280"
+    },
+    {
+      "path": "/boot/ds18b20-backup-20260913-171755/jetson-io-hdr40-user-custom.dtbo",
+      "bytes": 2076,
+      "sha256": "ba4e6a7574c0d256130e518a0c04037980040e6173a3819413fb953c289a1c97"
+    },
+    {
+      "path": "/boot/ds18b20-pin7.dtbo",
+      "bytes": 2410,
+      "sha256": "fa181519c6a2e5695d181e1812b3d4347b7d227fa7e2302c11672a40658c8efb"
+    },
+    {
+      "path": "/boot/extlinux/extlinux.conf",
+      "bytes": 1335,
+      "sha256": "f0f62e68332bf27a30c777b32a00fa35cdb9cb62f4db5de921e0ee69cc2a4f5a"
+    },
+    {
+      "path": "/boot/jetson-io-hdr40-user-custom.dtbo",
+      "bytes": 2076,
+      "sha256": "ba4e6a7574c0d256130e518a0c04037980040e6173a3819413fb953c289a1c97"
+    },
+    {
+      "path": "/boot/jetson-io-hdr40-user-custom.dtbo.before-dht22",
+      "bytes": 2029,
+      "sha256": "7b966f47889ac39ad79080c99666b76971351b9c9a867b6e01f3f82ee8a76eeb"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/README.md",
+      "bytes": 1596,
+      "sha256": "9d83f9db0414abe23de257717efe45b9dd7e946976eaf434235c36a609067378"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/ds18b20-pin7.dtbo",
+      "bytes": 2410,
+      "sha256": "fa181519c6a2e5695d181e1812b3d4347b7d227fa7e2302c11672a40658c8efb"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/ds18b20-pin7.dts",
+      "bytes": 2931,
+      "sha256": "2fc8c77d7effbfd626661ed32a8e59bda1b3a95c2389e03b7125815361c79c99"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/extlinux.original.conf",
+      "bytes": 1350,
+      "sha256": "3e583c96032261185cb02007ca2f383d699cc346857e0da78079910ac0554280"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/install.py",
+      "bytes": 2257,
+      "sha256": "0bcea7d696c2d981d382759f8c0c3a55d7b579c7fdcd8fbad4e5892a004cce4a"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/original.dtbo",
+      "bytes": 2076,
+      "sha256": "ba4e6a7574c0d256130e518a0c04037980040e6173a3819413fb953c289a1c97"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/overlay-validation.diff",
+      "bytes": 672,
+      "sha256": "15ace8cc45c7a29eb0325d92e0e6eff9e4596bc92a7a1bae6d2f4d019e3b5065"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/pinctrl-tegra234.c",
+      "bytes": 79911,
+      "sha256": "9f8f9d4612130c4749cd6800c2f2ad2673294924bc438ba6af33d7a2312df071"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/read_temperature.py",
+      "bytes": 655,
+      "sha256": "aae57735ba4d2847acd0df2cc270dd664a27c774844af3b3c65c000cf7d1e1bc"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/Makefile",
+      "bytes": 130,
+      "sha256": "a894b174f56fca4ac597f3b35d542b256bcb08b4be2caec83b3a3ec421ae4730"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/masters/w1-gpio.c",
+      "bytes": 4952,
+      "sha256": "928af7b1e07945eb1c95134db6d4a5081d64c00c5d6ef16a618217a809f17022"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/masters/w1-gpio.ko",
+      "bytes": 47408,
+      "sha256": "dfa7efc3ebe4ccaac0a593cca80f0832c5dca1ab939d04458aab00dc309f6a62",
+      "vermagic": "5.15.148-tegra SMP preempt mod_unload modversions aarch64"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/slaves/w1_therm.c",
+      "bytes": 56838,
+      "sha256": "08788555bdc824e7b088d93b2246ebf6e4d9cd2f44480e0c11520ebf84d105c7"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/slaves/w1_therm.ko",
+      "bytes": 142504,
+      "sha256": "8de3ddd515b3701f19c9572aec021ed0e43285369dcc5b76c09b467c62c9f97b",
+      "vermagic": "5.15.148-tegra SMP preempt mod_unload modversions aarch64"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/w1.c",
+      "bytes": 32487,
+      "sha256": "c7a183cbd02671de8e3a01a1b996347cc4f1f8f282fcfc563b8ca5fa5d7df60c"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/w1_family.c",
+      "bytes": 2563,
+      "sha256": "38f9ef496c4a4163d3d524e078f2b4e82fcc046977ded0a2ded4527b91e24163"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/w1_int.c",
+      "bytes": 5781,
+      "sha256": "4553607ccf01b900ccc1a5429ddc818f2554f7afd146e83e5810b5b7edcd36e5"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/w1_internal.h",
+      "bytes": 2694,
+      "sha256": "0b8cdc14f68547ba9d1bd887afdf2a42038ee7b212b5e12abe3a683aae088338"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/w1_io.c",
+      "bytes": 11841,
+      "sha256": "89b31d18fffed5efe9c491edd88f0102b594683b7a27359e6417e354fe0fdbdb"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/w1_netlink.c",
+      "bytes": 19302,
+      "sha256": "3ac43e9e67bc5a988cc29de9234d33692e875def879905f9b24e4d56dbe90d60"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/w1_netlink.h",
+      "bytes": 3625,
+      "sha256": "fe3f652e45af7cace22cc2dd1445f3a0c170e2b02e13b7370f653bd51521a706"
+    },
+    {
+      "path": "/home/judgejack/project/ds18b20/w1/wire.ko",
+      "bytes": 248760,
+      "sha256": "961e2ee69123e6a8535f910cc807370994d3e3f12a40090722dc098fd83dd0d4",
+      "vermagic": "5.15.148-tegra SMP preempt mod_unload modversions aarch64"
+    },
+    {
+      "path": "/lib/modules/5.15.148-tegra/extra/ds18b20/w1-gpio.ko",
+      "bytes": 47408,
+      "sha256": "dfa7efc3ebe4ccaac0a593cca80f0832c5dca1ab939d04458aab00dc309f6a62",
+      "vermagic": "5.15.148-tegra SMP preempt mod_unload modversions aarch64"
+    },
+    {
+      "path": "/lib/modules/5.15.148-tegra/extra/ds18b20/w1_therm.ko",
+      "bytes": 142504,
+      "sha256": "8de3ddd515b3701f19c9572aec021ed0e43285369dcc5b76c09b467c62c9f97b",
+      "vermagic": "5.15.148-tegra SMP preempt mod_unload modversions aarch64"
+    },
+    {
+      "path": "/lib/modules/5.15.148-tegra/extra/ds18b20/wire.ko",
+      "bytes": 248760,
+      "sha256": "961e2ee69123e6a8535f910cc807370994d3e3f12a40090722dc098fd83dd0d4",
+      "vermagic": "5.15.148-tegra SMP preempt mod_unload modversions aarch64"
+    }
+  ]
+}

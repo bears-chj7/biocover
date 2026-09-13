@@ -1,0 +1,2 @@
+# Preserve unified-diff context whitespace in archived validation evidence.
+history/**/artifacts/**/*.diff -whitespace

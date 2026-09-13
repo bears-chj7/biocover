@@ -1,0 +1,15 @@
+161 (soc_gpio59_pac6):
+        pull=0
+        tristate=0
+        enable-input=1
+        open-drain=0
+        io-reset=0
+        rcv-sel=0
+        io-hv=0
+        schmitt=0
+        pull-down-strength=31
+        pull-up-strength=31
+        drive-type=0
+        gpio-mode=0
+        function=rsvd2
+162 (soc_gpio60_pac7):

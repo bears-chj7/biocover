@@ -1,0 +1,30 @@
+--- existing-overlay-applied
++++ ds18b20-overlay-applied
+@@ -6,6 +6,12 @@
+ 	#address-cells = <0x02>;
+ 	#size-cells = <0x02>;
+ 	model = "NVIDIA Jetson Orin Nano Engineering Reference Developer Kit Super";
++
++	onewire {
++		status = "okay";
++		gpios = <0xf3 0xa6 0x00>;
++		compatible = "w1-gpio";
++	};
+ 
+ 	bus@0 {
+ 		compatible = "simple-bus";
+@@ -91,6 +97,14 @@
+ 					nvidia,pull = <0x00>;
+ 					nvidia,function = "rsvd1";
+ 					nvidia,pins = "soc_gpio39_pn1";
++				};
++
++				hdr40-pin7 {
++					nvidia,enable-input = <0x01>;
++					nvidia,tristate = <0x00>;
++					nvidia,pull = <0x00>;
++					nvidia,function = "rsvd2";
++					nvidia,pins = "soc_gpio59_pac6";
+ 				};
+ 			};
+ 
