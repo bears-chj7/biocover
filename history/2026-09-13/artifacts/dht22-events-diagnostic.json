@@ -1,0 +1,29 @@
+{
+  "method": "GPIO v2 kernel edge timestamp capture; 5 attempts; P15 only",
+  "config_us": [
+    277.0,
+    434.0,
+    1894.8,
+    330.2,
+    830.6
+  ],
+  "event_count": [
+    48,
+    47,
+    13,
+    50,
+    11
+  ],
+  "sequence_gaps": [
+    0,
+    0,
+    0,
+    0,
+    0
+  ],
+  "valid_frames": 0,
+  "temperature_C": null,
+  "humidity_pct": null,
+  "permanent_configuration_changed": false,
+  "ds18b20_pullup_physical_confirmation": "requested; awaiting user"
+}

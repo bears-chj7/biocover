@@ -214,3 +214,12 @@ gcc -O2 -Wall -Wextra -Werror -o build/dht22_probe scripts/dht22_probe.c
 ```
 
 P15에 오픈드레인 측정 요청을 보내 최대 8회 폴링합니다. 완전한 펄스 수·체크섬·범위를 통과한 프레임만 출력하며, 성공 프레임이 없으면 종료 코드 2입니다. **현재 보드에서 유효 프레임 확보에 실패했으므로 검증된 수집기로 사용하지 않습니다.** SPI/P7·부팅 설정은 변경하지 않습니다. 사용자 공간 타이밍 한계를 해결하기 위한 후속 검토용 소스입니다.
+
+GPIO v2 커널 에지 기록 진단 후보도 추가했습니다:
+
+```bash
+gcc -O2 -Wall -Wextra -Werror -o build/dht22_events scripts/dht22_events.c
+./build/dht22_events
+```
+
+이 방식도 현재 5회 모두 유효 프레임 미확보입니다. 이벤트 시간과 GPIO 설정 지연을 조사하기 위한 진단 도구이며, 실제 온·습도 수집기로 검증되지 않았습니다.
