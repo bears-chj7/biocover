@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="860" viewBox="0 0 1200 860" role="img" aria-labelledby="title desc">
+<title id="title">UNO 센서 핀맵과 풀업 연결</title><desc id="desc">신호 핀은 동작 스케치 확인값 · 아래 5V 전원선은 권장 연결 예시, 현장 전압 재실측은 미수행</desc>
+<style>text{font-family:"Noto Sans CJK KR","Noto Sans",Arial,sans-serif}</style>
+<rect width="1200" height="860" fill="#f5f8fc"/>
+<text x="40" y="49" font-size="27" fill="#172b42" text-anchor="start" font-weight="700">UNO 센서 핀맵과 풀업 연결</text>
+<text x="40" y="79" font-size="15" fill="#52677e" text-anchor="start" font-weight="400">신호 핀은 동작 스케치 확인값 · 아래 5V 전원선은 권장 연결 예시, 현장 전압 재실측은 미수행</text>
+<rect x="40" y="120" width="220" height="265" rx="12" fill="white" stroke="#16826a" stroke-width="2"/>
+<text x="65" y="160" font-size="26" fill="#16826a" text-anchor="start" font-weight="700">UNO</text>
+<rect x="870" y="120" width="290" height="265" rx="12" fill="white" stroke="#d6dfeb" stroke-width="2"/>
+<text x="894" y="160" font-size="21" fill="#172b42" text-anchor="start" font-weight="700">DS18B20 방수 프로브</text>
+<text x="230" y="211" font-size="19" fill="#bc3345" text-anchor="end" font-weight="700">5V</text>
+<path d="M260,205 L870,205" fill="none" stroke="#bc3345" stroke-width="3"/>
+<text x="894" y="211" font-size="18" fill="#bc3345" text-anchor="start" font-weight="400">VDD · 빨강</text>
+<text x="230" y="291" font-size="19" fill="#2463b4" text-anchor="end" font-weight="700">D2</text>
+<path d="M260,285 L870,285" fill="none" stroke="#2463b4" stroke-width="3"/>
+<text x="894" y="291" font-size="18" fill="#2463b4" text-anchor="start" font-weight="400">DQ · 노랑</text>
+<text x="230" y="351" font-size="19" fill="#6b7280" text-anchor="end" font-weight="700">GND</text>
+<path d="M260,345 L870,345" fill="none" stroke="#6b7280" stroke-width="3"/>
+<text x="894" y="351" font-size="18" fill="#6b7280" text-anchor="start" font-weight="400">GND · 검정</text>
+<path d="M570,205 L570,223" fill="none" stroke="#bc3345" stroke-width="3"/>
+<rect x="557" y="223" width="26" height="43" rx="0" fill="white" stroke="#2463b4" stroke-width="2"/>
+<path d="M570,266 L570,285" fill="none" stroke="#2463b4" stroke-width="3"/>
+<circle cx="570" cy="205" r="5" fill="#bc3345"/>
+<circle cx="570" cy="285" r="5" fill="#2463b4"/>
+<text x="610" y="252" font-size="20" fill="#2463b4" text-anchor="start" font-weight="700">4.7kΩ 풀업</text>
+<text x="65" y="423" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">노란선과 D2는 직접 연결. 저항은 DATA–5V 사이에 분기 연결하며 직렬로 넣지 않습니다.</text>
+<rect x="40" y="460" width="220" height="265" rx="12" fill="white" stroke="#16826a" stroke-width="2"/>
+<text x="65" y="500" font-size="26" fill="#16826a" text-anchor="start" font-weight="700">UNO</text>
+<rect x="870" y="460" width="290" height="265" rx="12" fill="white" stroke="#d6dfeb" stroke-width="2"/>
+<text x="894" y="500" font-size="21" fill="#172b42" text-anchor="start" font-weight="700">DHT22 3핀 모듈</text>
+<text x="230" y="551" font-size="19" fill="#bc3345" text-anchor="end" font-weight="700">5V</text>
+<path d="M260,545 L870,545" fill="none" stroke="#bc3345" stroke-width="3"/>
+<text x="894" y="551" font-size="18" fill="#bc3345" text-anchor="start" font-weight="400">VCC</text>
+<text x="230" y="631" font-size="19" fill="#2463b4" text-anchor="end" font-weight="700">D3</text>
+<path d="M260,625 L870,625" fill="none" stroke="#2463b4" stroke-width="3"/>
+<text x="894" y="631" font-size="18" fill="#2463b4" text-anchor="start" font-weight="400">DAT / DATA</text>
+<text x="230" y="691" font-size="19" fill="#6b7280" text-anchor="end" font-weight="700">GND</text>
+<path d="M260,685 L870,685" fill="none" stroke="#6b7280" stroke-width="3"/>
+<text x="894" y="691" font-size="18" fill="#6b7280" text-anchor="start" font-weight="400">GND</text>
+<text x="395" y="583" font-size="18" fill="#2463b4" text-anchor="start" font-weight="400">모듈 내장 풀업 있음: 추가 저항 없음</text>
+<text x="894" y="718" font-size="15" fill="#ac6500" text-anchor="start" font-weight="400">실크 인쇄로 핀 식별</text>
+<text x="40" y="778" font-size="17" fill="#bc3345" text-anchor="start" font-weight="400">UNO ↔ Jetson은 USB로 연결. UNO의 5V DATA를 Jetson 헤더에 직접 연결하지 않습니다.</text>
+<text x="40" y="808" font-size="15" fill="#52677e" text-anchor="start" font-weight="400">위·아래 UNO 박스는 같은 보드의 5V/GND를 반복 표시한 것입니다. 선 색은 기능 구분입니다.</text>
+<text x="40" y="838" font-size="13" fill="#52677e" text-anchor="start" font-weight="400">BIOCOVER · 2026-09-13 · 개념 배선도 / 실물 축척 아님 · 출처·확인 범위: docs/hardware-guide.md</text>
+</svg>

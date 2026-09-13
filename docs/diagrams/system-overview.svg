@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+<title id="title">현재 측정 시스템</title><desc id="desc">실선은 사용 중인 데이터 경로 · 전원 배선은 각 상세 그림 참조</desc>
+<style>text{font-family:"Noto Sans CJK KR","Noto Sans",Arial,sans-serif}</style>
+<rect width="1200" height="700" fill="#f5f8fc"/>
+<text x="40" y="49" font-size="27" fill="#172b42" text-anchor="start" font-weight="700">현재 측정 시스템</text>
+<text x="40" y="79" font-size="15" fill="#52677e" text-anchor="start" font-weight="400">실선은 사용 중인 데이터 경로 · 전원 배선은 각 상세 그림 참조</text>
+<rect x="40" y="130" width="300" height="90" rx="12" fill="white" stroke="#d6dfeb" stroke-width="2"/>
+<text x="62" y="164" font-size="22" fill="#172b42" text-anchor="start" font-weight="700">DS18B20</text>
+<text x="62" y="195" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">토양 온도 · UNO D2</text>
+<rect x="40" y="260" width="300" height="90" rx="12" fill="white" stroke="#d6dfeb" stroke-width="2"/>
+<text x="62" y="294" font-size="22" fill="#172b42" text-anchor="start" font-weight="700">DHT22 / AM2302</text>
+<text x="62" y="325" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">온도·습도 · UNO D3</text>
+<rect x="40" y="420" width="300" height="90" rx="12" fill="white" stroke="#d6dfeb" stroke-width="2"/>
+<text x="62" y="454" font-size="22" fill="#172b42" text-anchor="start" font-weight="700">MQ-4 #1 / #2</text>
+<text x="62" y="485" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">유입·유출 · CH0 / CH1</text>
+<rect x="40" y="550" width="300" height="90" rx="12" fill="white" stroke="#d6dfeb" stroke-width="2"/>
+<text x="62" y="584" font-size="22" fill="#172b42" text-anchor="start" font-weight="700">토양수분 센서</text>
+<text x="62" y="615" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">정전용량식 · CH4</text>
+<rect x="430" y="155" width="280" height="170" rx="12" fill="white" stroke="#16826a" stroke-width="2"/>
+<text x="454" y="197" font-size="25" fill="#16826a" text-anchor="start" font-weight="700">Arduino UNO</text>
+<text x="454" y="232" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">DS18 + DHT22 polling</text>
+<text x="454" y="264" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">약 2초마다 CSV 전송</text>
+<text x="454" y="295" font-size="16" fill="#52677e" text-anchor="start" font-weight="400">USB 변환기: CH340</text>
+<rect x="430" y="445" width="280" height="155" rx="12" fill="white" stroke="#2463b4" stroke-width="2"/>
+<text x="454" y="488" font-size="25" fill="#2463b4" text-anchor="start" font-weight="700">MCP3008</text>
+<text x="454" y="525" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">8채널 · 10비트 ADC</text>
+<text x="454" y="561" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">VDD / VREF = 3.3V</text>
+<path d="M340,175 L430,210" fill="none" stroke="#16826a" stroke-width="3"/>
+<path d="M340,305 L430,275" fill="none" stroke="#16826a" stroke-width="3"/>
+<path d="M340,465 L430,480" fill="none" stroke="#2463b4" stroke-width="3"/>
+<path d="M340,595 L430,565" fill="none" stroke="#2463b4" stroke-width="3"/>
+<rect x="850" y="160" width="310" height="445" rx="12" fill="white" stroke="#172b42" stroke-width="2"/>
+<text x="875" y="205" font-size="25" fill="#172b42" text-anchor="start" font-weight="700">Jetson Orin Nano</text>
+<text x="875" y="239" font-size="21" fill="#172b42" text-anchor="start" font-weight="400">Super 개발 키트</text>
+<text x="875" y="310" font-size="16" fill="#52677e" text-anchor="start" font-weight="400">USB: /dev/biocover-uno</text>
+<text x="875" y="340" font-size="16" fill="#52677e" text-anchor="start" font-weight="400">9600 baud · 8N1</text>
+<text x="875" y="465" font-size="16" fill="#52677e" text-anchor="start" font-weight="400">SPI: /dev/spidev0.0</text>
+<text x="875" y="505" font-size="19" fill="#16826a" text-anchor="start" font-weight="700">기본: 화면 출력</text>
+<text x="875" y="540" font-size="17" fill="#52677e" text-anchor="start" font-weight="400">CSV: 명시적 요청 시 저장</text>
+<text x="875" y="576" font-size="15" fill="#ac6500" text-anchor="start" font-weight="400">자동 저장 중지 적용 대기</text>
+<path d="M710,265 L850,265" fill="none" stroke="#16826a" stroke-width="3"/>
+<text x="780" y="250" font-size="18" fill="#16826a" text-anchor="middle" font-weight="700">USB</text>
+<path d="M710,465 L850,465" fill="none" stroke="#2463b4" stroke-width="3"/>
+<text x="780" y="450" font-size="18" fill="#2463b4" text-anchor="middle" font-weight="700">SPI</text>
+<text x="40" y="656" font-size="16" fill="#ac6500" text-anchor="start" font-weight="400">미연결: MQ-4 #3 / #4, CM1106 · P7/P15 직접 센서 통신은 과거 진단 경로</text>
+<text x="40" y="678" font-size="13" fill="#52677e" text-anchor="start" font-weight="400">BIOCOVER · 2026-09-13 · 개념 배선도 / 실물 축척 아님 · 출처·확인 범위: docs/hardware-guide.md</text>
+</svg>

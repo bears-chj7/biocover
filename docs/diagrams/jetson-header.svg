@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1120" viewBox="0 0 1200 1120" role="img" aria-labelledby="title desc">
+<title id="title">Jetson 40핀 헤더 사용 현황</title><desc id="desc">물리 핀 번호 P1~P40 · P1–P2를 위에 놓은 도식 · 실제 보드의 P1 표시를 먼저 확인</desc>
+<style>text{font-family:"Noto Sans CJK KR","Noto Sans",Arial,sans-serif}</style>
+<rect width="1200" height="1120" fill="#f5f8fc"/>
+<text x="40" y="49" font-size="27" fill="#172b42" text-anchor="start" font-weight="700">Jetson 40핀 헤더 사용 현황</text>
+<text x="40" y="79" font-size="15" fill="#52677e" text-anchor="start" font-weight="400">물리 핀 번호 P1~P40 · P1–P2를 위에 놓은 도식 · 실제 보드의 P1 표시를 먼저 확인</text>
+<rect x="475" y="115" width="250" height="895" rx="12" fill="#e9eff7" stroke="#d6dfeb" stroke-width="2"/>
+<rect x="523" y="127" width="54" height="32" rx="5" fill="white" stroke="#bc3345" stroke-width="2"/>
+<text x="550" y="150" font-size="18" fill="#bc3345" text-anchor="middle" font-weight="700">1</text>
+<text x="450" y="150" font-size="16" fill="#bc3345" text-anchor="end" font-weight="400">3.3V → ADC / 토양수분</text>
+<rect x="623" y="127" width="54" height="32" rx="5" fill="white" stroke="#bc3345" stroke-width="2"/>
+<text x="650" y="150" font-size="18" fill="#bc3345" text-anchor="middle" font-weight="700">2</text>
+<text x="750" y="150" font-size="16" fill="#bc3345" text-anchor="start" font-weight="400">5V → MQ-4 #1 / #2</text>
+<rect x="523" y="170" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="193" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">3</text>
+<text x="450" y="193" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">I2C · 미사용</text>
+<rect x="623" y="170" width="54" height="32" rx="5" fill="white" stroke="#bc3345" stroke-width="2"/>
+<text x="650" y="193" font-size="18" fill="#bc3345" text-anchor="middle" font-weight="700">4</text>
+<text x="750" y="193" font-size="16" fill="#bc3345" text-anchor="start" font-weight="400">5V · 예비</text>
+<rect x="523" y="213" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="236" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">5</text>
+<text x="450" y="236" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">I2C · 미사용</text>
+<rect x="623" y="213" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="236" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">6</text>
+<text x="750" y="236" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">GND · ADC / 센서 공통</text>
+<rect x="523" y="256" width="54" height="32" rx="5" fill="white" stroke="#ac6500" stroke-width="2"/>
+<text x="550" y="279" font-size="18" fill="#ac6500" text-anchor="middle" font-weight="700">7</text>
+<text x="450" y="279" font-size="16" fill="#ac6500" text-anchor="end" font-weight="400">GPIO09 · 과거 DS18 직결</text>
+<rect x="623" y="256" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="279" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">8</text>
+<text x="750" y="279" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">UART TX · CM1106 미연결</text>
+<rect x="523" y="299" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="322" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">9</text>
+<text x="450" y="322" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">GND</text>
+<rect x="623" y="299" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="322" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">10</text>
+<text x="750" y="322" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">UART RX · CM1106 미연결</text>
+<rect x="523" y="342" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="365" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">11</text>
+<text x="450" y="365" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">미사용</text>
+<rect x="623" y="342" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="365" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">12</text>
+<text x="750" y="365" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">미사용</text>
+<rect x="523" y="385" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="408" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">13</text>
+<text x="450" y="408" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">미사용</text>
+<rect x="623" y="385" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="408" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">14</text>
+<text x="750" y="408" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">GND</text>
+<rect x="523" y="428" width="54" height="32" rx="5" fill="white" stroke="#ac6500" stroke-width="2"/>
+<text x="550" y="451" font-size="18" fill="#ac6500" text-anchor="middle" font-weight="700">15</text>
+<text x="450" y="451" font-size="16" fill="#ac6500" text-anchor="end" font-weight="400">GPIO12 · 과거 DHT22 직결</text>
+<rect x="623" y="428" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="451" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">16</text>
+<text x="750" y="451" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">미사용</text>
+<rect x="523" y="471" width="54" height="32" rx="5" fill="white" stroke="#bc3345" stroke-width="2"/>
+<text x="550" y="494" font-size="18" fill="#bc3345" text-anchor="middle" font-weight="700">17</text>
+<text x="450" y="494" font-size="16" fill="#bc3345" text-anchor="end" font-weight="400">3.3V · 현재 센서 사용 없음</text>
+<rect x="623" y="471" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="494" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">18</text>
+<text x="750" y="494" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">미사용</text>
+<rect x="523" y="514" width="54" height="32" rx="5" fill="white" stroke="#2463b4" stroke-width="2"/>
+<text x="550" y="537" font-size="18" fill="#2463b4" text-anchor="middle" font-weight="700">19</text>
+<text x="450" y="537" font-size="16" fill="#2463b4" text-anchor="end" font-weight="400">MOSI → MCP3008 DIN</text>
+<rect x="623" y="514" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="537" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">20</text>
+<text x="750" y="537" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">GND</text>
+<rect x="523" y="557" width="54" height="32" rx="5" fill="white" stroke="#2463b4" stroke-width="2"/>
+<text x="550" y="580" font-size="18" fill="#2463b4" text-anchor="middle" font-weight="700">21</text>
+<text x="450" y="580" font-size="16" fill="#2463b4" text-anchor="end" font-weight="400">MISO ← MCP3008 DOUT</text>
+<rect x="623" y="557" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="580" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">22</text>
+<text x="750" y="580" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">미사용</text>
+<rect x="523" y="600" width="54" height="32" rx="5" fill="white" stroke="#2463b4" stroke-width="2"/>
+<text x="550" y="623" font-size="18" fill="#2463b4" text-anchor="middle" font-weight="700">23</text>
+<text x="450" y="623" font-size="16" fill="#2463b4" text-anchor="end" font-weight="400">SCK → MCP3008 CLK</text>
+<rect x="623" y="600" width="54" height="32" rx="5" fill="white" stroke="#2463b4" stroke-width="2"/>
+<text x="650" y="623" font-size="18" fill="#2463b4" text-anchor="middle" font-weight="700">24</text>
+<text x="750" y="623" font-size="16" fill="#2463b4" text-anchor="start" font-weight="400">CS0 → MCP3008 CS/SHDN</text>
+<rect x="523" y="643" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="666" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">25</text>
+<text x="450" y="666" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">GND</text>
+<rect x="623" y="643" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="666" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">26</text>
+<text x="750" y="666" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">CS1 · 설정 유지 / 미배선</text>
+<rect x="523" y="686" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="709" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">27</text>
+<text x="450" y="709" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">I2C · 미사용</text>
+<rect x="623" y="686" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="709" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">28</text>
+<text x="750" y="709" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">I2C · 미사용</text>
+<rect x="523" y="729" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="752" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">29</text>
+<text x="450" y="752" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">미사용</text>
+<rect x="623" y="729" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="752" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">30</text>
+<text x="750" y="752" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">GND</text>
+<rect x="523" y="772" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="795" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">31</text>
+<text x="450" y="795" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">미사용</text>
+<rect x="623" y="772" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="795" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">32</text>
+<text x="750" y="795" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">미사용</text>
+<rect x="523" y="815" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="838" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">33</text>
+<text x="450" y="838" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">미사용</text>
+<rect x="623" y="815" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="838" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">34</text>
+<text x="750" y="838" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">GND</text>
+<rect x="523" y="858" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="881" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">35</text>
+<text x="450" y="881" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">미사용</text>
+<rect x="623" y="858" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="881" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">36</text>
+<text x="750" y="881" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">미사용</text>
+<rect x="523" y="901" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="924" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">37</text>
+<text x="450" y="924" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">미사용</text>
+<rect x="623" y="901" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="924" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">38</text>
+<text x="750" y="924" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">미사용</text>
+<rect x="523" y="944" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="550" y="967" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">39</text>
+<text x="450" y="967" font-size="16" fill="#6b7280" text-anchor="end" font-weight="400">GND</text>
+<rect x="623" y="944" width="54" height="32" rx="5" fill="white" stroke="#6b7280" stroke-width="2"/>
+<text x="650" y="967" font-size="18" fill="#6b7280" text-anchor="middle" font-weight="700">40</text>
+<text x="750" y="967" font-size="16" fill="#6b7280" text-anchor="start" font-weight="400">미사용</text>
+<text x="40" y="1040" font-size="18" fill="#ac6500" text-anchor="start" font-weight="400">P7 / P15: TXB0108 경유 → DS18/DHT22는 현재 UNO에서 읽습니다.</text>
+<text x="40" y="1072" font-size="15" fill="#52677e" text-anchor="start" font-weight="400">표의 “미사용”은 프로젝트 사용 현황이며 GPIO 모드나 핀mux 설정값을 의미하지 않습니다.</text>
+<text x="40" y="1098" font-size="13" fill="#52677e" text-anchor="start" font-weight="400">BIOCOVER · 2026-09-13 · 개념 배선도 / 실물 축척 아님 · 출처·확인 범위: docs/hardware-guide.md</text>
+</svg>

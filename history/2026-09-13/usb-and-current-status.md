@@ -81,3 +81,18 @@ ADC 전압은 VREF=3.3V 가정이다. MQ-4 ppm, MOE 및 토양수분 %는
 ```bash
 sudo python3 scripts/show_all_sensors.py --disable-autosave --samples 5
 ```
+
+## 하드웨어 그림과 핀맵 문서화
+
+사용자 요청으로 GitHub 표시용 SVG 4개와 하드웨어 가이드를 작성했다.
+전체 데이터 경로, UNO D2/D3 및 DS18 풀업, Jetson 40핀 사용 현황,
+MCP3008 16핀 번호/채널/SPI 대응을 포함한다.
+NVIDIA/Arduino/Microchip/Analog Devices/TI 자료를 연결하고
+현장 확인값과 권장 전원 예시, 미확인 MQ-4 분압 및 모듈 리비전을 구분했다.
+기존 wiring.md의 DHT/DS18 연결 표를 UNO 구성으로 갱신하고
+과거 P7/P15 직결 정보는 이력으로 표시했다.
+
+생성기: `docs/diagrams/generate.py` (표준 Python).
+4개 SVG를 PNG로 렌더링해 글자, 연결선, 칩 홈 방향과 핀 순서를 시각 점검했다.
+문서 작업이며 시스템 설정이나 센서 배선은 변경하지 않았다.
+[하드웨어 가이드](../../docs/hardware-guide.md)

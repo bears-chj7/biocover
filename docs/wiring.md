@@ -1,5 +1,12 @@
 # 배선 및 연결 상태
 
+**현재 구성:** DS18은 UNO D2, DHT22는 UNO D3에서 읽고 Jetson에 USB로 전송합니다.
+[그림·핀맵·제조사 자료를 모은 하드웨어 가이드](hardware-guide.md)
+
+![현재 센서 데이터 경로](diagrams/system-overview.svg)
+
+아래 초기 직결 설명은 과거 진단 이력입니다. 현재 연결 표는 UNO 전환을 반영합니다.
+
 **최신 정정:** P7과 P15는 개발 키트의 TXB0108 전압 변환기를 거칩니다.
 DS18의 P7+4.7kΩ 직결은 검증된 권장 배선이 아닙니다. LOW 명령 중 1.6V가
 실측되었고, 변환기와 풀업의 충돌 계산값과 부합합니다. 아래 표는 기존 연결
@@ -17,12 +24,13 @@ DS18의 P7+4.7kΩ 직결은 검증된 권장 배선이 아닙니다. LOW 명령 
 | MQ-4 #3 | AOUT CH2 예정 | 5V 예정 | **미연결** |
 | MQ-4 #4 | AOUT CH3 예정 | 5V 예정 | **미연결** |
 | 정전용량식 토양수분 | AOUT CH4 | P1 3.3V | 연결 |
-| DHT22/AM2302 | DATA P15, 10kΩ 풀업 → 3.3V | P17 3.3V | 연결, P15 수정 후 펄스 검출·유효 프레임 미확보 |
-| DS18B20 | DATA P7, 4.7kΩ 풀업 → 3.3V | P1 3.3V | 연결, 외부 드라이버 설치·정상 ID 미검출 |
+| DHT22/AM2302 | DATA UNO D3, 내장 풀업 | UNO 5V 권장 구성 | USB 온도·습도 수신 성공 |
+| DS18B20 | DATA UNO D2, DATA–전원 4.7kΩ 풀업 | UNO 5V 권장 구성 | USB 온도 수신 성공 |
 | CM1106 | TX P10 / RX P8 예정 | P2 5V 예정 | **미연결** |
 
 전 장치 공통 GND. MCP3008 AGND·DGND도 GND에 연결합니다. CH5~CH7은 미사용입니다.
-토양수분은 CH2에서 CH4로 변경되었습니다. DHT22의 현재 DATA 연결은 P11이 아닌 P15입니다.
+토양수분은 CH2에서 CH4로 변경되었습니다. DHT22 DATA는 현재 UNO D3입니다.
+UNO 전원/저항 상태는 전환 후 직접 재실측하지 않았으며 전원 표시는 권장 구성입니다.
 
 Jetson-IO의 spi1 (P19·21·23·24·26)은 이 장치에서 `/dev/spidev0.0`의 CS0 경로에 대응합니다.
 P15는 gpiochip0 line 85 (PN.01), P7은 line 144 (PAC.06)입니다.
@@ -32,7 +40,7 @@ MCP3008 VREF/VDD가 3.3V이므로 ADC 입력 범위를 0~3.3V로 제한해야 �
 MQ-4 AOUT의 분압 유무 및 실제 최대 전압은 아직 확인되지 않았습니다.
 참고: [Microchip MCP3008 데이터시트](https://ww1.microchip.com/downloads/aemDocuments/documents/MSLD/ProductDocuments/DataSheets/MCP3004-MCP3008-Data-Sheet-DS20001295.pdf).
 
-## 사용자 추가 확인
+## 과거 Jetson 직결 당시 사용자 추가 확인
 
 2026-09-13: DS18B20 DATA 풀업 저항이 실제로 미연결이라고 확인됨. DATA(P7)–3.3V(P1)에 4.7kΩ 저항 추가 안내, 연결 완료는 아직 미확인.
 DHT22는 사용자 Arduino 환경에서 정상 읽기 보고. Jetson 측 유효 프레임 확보는 계속 미완료.

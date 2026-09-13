@@ -1,5 +1,17 @@
 # 바이오커버 메탄 산화 측정 실험
 
+## 보드·센서 연결 그림
+
+![현재 Jetson·UNO·MCP3008 센서 구성](docs/diagrams/system-overview.svg)
+
+[하드웨어 가이드: 전체 그림·핀맵·전원·제조사 자료](docs/hardware-guide.md)
+
+- [UNO 센서 배선도와 4.7kΩ 풀업](docs/diagrams/uno-sensor-wiring.svg)
+- [Jetson 40핀 사용 현황](docs/diagrams/jetson-header.svg)
+- [MCP3008 칩 핀맵과 SPI 연결](docs/diagrams/mcp3008-pinmap.svg)
+
+## 최신 진행 상태
+
 **최신 방침:** 센서값은 기본적으로 화면에 출력하고, CSV는 사용자가 명시적으로
 요청할 때만 저장한다. 재부팅 후 수집 재개는 확인했다. 기존 자동 저장 서비스의
 중지 명령은 sudo 암호 필요로 적용하지 못해 사용자 실행을 기다리고 있다.

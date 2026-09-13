@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850" role="img" aria-labelledby="title desc">
+<title id="title">MCP3008 핀맵과 Jetson SPI 연결</title><desc id="desc">16핀 PDIP / SOIC: 부품 윗면, 홈이 위쪽 · 모듈 기판 사용 시 실크 인쇄와 제조사 회로 확인</desc>
+<style>text{font-family:"Noto Sans CJK KR","Noto Sans",Arial,sans-serif}</style>
+<rect width="1200" height="850" fill="#f5f8fc"/>
+<text x="40" y="49" font-size="27" fill="#172b42" text-anchor="start" font-weight="700">MCP3008 핀맵과 Jetson SPI 연결</text>
+<text x="40" y="79" font-size="15" fill="#52677e" text-anchor="start" font-weight="400">16핀 PDIP / SOIC: 부품 윗면, 홈이 위쪽 · 모듈 기판 사용 시 실크 인쇄와 제조사 회로 확인</text>
+<rect x="465" y="135" width="270" height="455" rx="12" fill="#e5edf7" stroke="#172b42" stroke-width="2"/>
+<path d="M570,135 A30,25 0 0 0 630,135" fill="white" stroke="#172b42" stroke-width="2"/>
+<text x="600" y="202" font-size="23" fill="#172b42" text-anchor="middle" font-weight="700">MCP3008</text>
+<path d="M395,242 L465,242" fill="none" stroke="#16826a" stroke-width="3"/>
+<text x="485" y="248" font-size="19" fill="#16826a" text-anchor="start" font-weight="700">1</text>
+<text x="375" y="248" font-size="17" fill="#16826a" text-anchor="end" font-weight="400">MQ-4 #1 → CH0</text>
+<path d="M735,242 L805,242" fill="none" stroke="#bc3345" stroke-width="3"/>
+<text x="715" y="248" font-size="19" fill="#bc3345" text-anchor="end" font-weight="700">16</text>
+<text x="825" y="248" font-size="17" fill="#bc3345" text-anchor="start" font-weight="400">VDD → P1 (3.3V)</text>
+<path d="M395,285 L465,285" fill="none" stroke="#16826a" stroke-width="3"/>
+<text x="485" y="291" font-size="19" fill="#16826a" text-anchor="start" font-weight="700">2</text>
+<text x="375" y="291" font-size="17" fill="#16826a" text-anchor="end" font-weight="400">MQ-4 #2 → CH1</text>
+<path d="M735,285 L805,285" fill="none" stroke="#bc3345" stroke-width="3"/>
+<text x="715" y="291" font-size="19" fill="#bc3345" text-anchor="end" font-weight="700">15</text>
+<text x="825" y="291" font-size="17" fill="#bc3345" text-anchor="start" font-weight="400">VREF → P1 (3.3V)</text>
+<path d="M395,328 L465,328" fill="none" stroke="#6b7280" stroke-width="3"/>
+<text x="485" y="334" font-size="19" fill="#6b7280" text-anchor="start" font-weight="700">3</text>
+<text x="375" y="334" font-size="17" fill="#6b7280" text-anchor="end" font-weight="400">CH2 · #3 예정 / 미연결</text>
+<path d="M735,328 L805,328" fill="none" stroke="#6b7280" stroke-width="3"/>
+<text x="715" y="334" font-size="19" fill="#6b7280" text-anchor="end" font-weight="700">14</text>
+<text x="825" y="334" font-size="17" fill="#6b7280" text-anchor="start" font-weight="400">AGND → GND</text>
+<path d="M395,371 L465,371" fill="none" stroke="#6b7280" stroke-width="3"/>
+<text x="485" y="377" font-size="19" fill="#6b7280" text-anchor="start" font-weight="700">4</text>
+<text x="375" y="377" font-size="17" fill="#6b7280" text-anchor="end" font-weight="400">CH3 · #4 예정 / 미연결</text>
+<path d="M735,371 L805,371" fill="none" stroke="#2463b4" stroke-width="3"/>
+<text x="715" y="377" font-size="19" fill="#2463b4" text-anchor="end" font-weight="700">13</text>
+<text x="825" y="377" font-size="17" fill="#2463b4" text-anchor="start" font-weight="400">CLK ← P23</text>
+<path d="M395,414 L465,414" fill="none" stroke="#16826a" stroke-width="3"/>
+<text x="485" y="420" font-size="19" fill="#16826a" text-anchor="start" font-weight="700">5</text>
+<text x="375" y="420" font-size="17" fill="#16826a" text-anchor="end" font-weight="400">토양수분 → CH4</text>
+<path d="M735,414 L805,414" fill="none" stroke="#2463b4" stroke-width="3"/>
+<text x="715" y="420" font-size="19" fill="#2463b4" text-anchor="end" font-weight="700">12</text>
+<text x="825" y="420" font-size="17" fill="#2463b4" text-anchor="start" font-weight="400">DOUT → P21</text>
+<path d="M395,457 L465,457" fill="none" stroke="#6b7280" stroke-width="3"/>
+<text x="485" y="463" font-size="19" fill="#6b7280" text-anchor="start" font-weight="700">6</text>
+<text x="375" y="463" font-size="17" fill="#6b7280" text-anchor="end" font-weight="400">CH5 · 미사용</text>
+<path d="M735,457 L805,457" fill="none" stroke="#2463b4" stroke-width="3"/>
+<text x="715" y="463" font-size="19" fill="#2463b4" text-anchor="end" font-weight="700">11</text>
+<text x="825" y="463" font-size="17" fill="#2463b4" text-anchor="start" font-weight="400">DIN ← P19</text>
+<path d="M395,500 L465,500" fill="none" stroke="#6b7280" stroke-width="3"/>
+<text x="485" y="506" font-size="19" fill="#6b7280" text-anchor="start" font-weight="700">7</text>
+<text x="375" y="506" font-size="17" fill="#6b7280" text-anchor="end" font-weight="400">CH6 · 미사용</text>
+<path d="M735,500 L805,500" fill="none" stroke="#2463b4" stroke-width="3"/>
+<text x="715" y="506" font-size="19" fill="#2463b4" text-anchor="end" font-weight="700">10</text>
+<text x="825" y="506" font-size="17" fill="#2463b4" text-anchor="start" font-weight="400">CS/SHDN ← P24</text>
+<path d="M395,543 L465,543" fill="none" stroke="#6b7280" stroke-width="3"/>
+<text x="485" y="549" font-size="19" fill="#6b7280" text-anchor="start" font-weight="700">8</text>
+<text x="375" y="549" font-size="17" fill="#6b7280" text-anchor="end" font-weight="400">CH7 · 미사용</text>
+<path d="M735,543 L805,543" fill="none" stroke="#6b7280" stroke-width="3"/>
+<text x="715" y="549" font-size="19" fill="#6b7280" text-anchor="end" font-weight="700">9</text>
+<text x="825" y="549" font-size="17" fill="#6b7280" text-anchor="start" font-weight="400">DGND → GND</text>
+<rect x="40" y="630" width="1120" height="145" rx="12" fill="#fff8e9" stroke="#d5a756" stroke-width="2"/>
+<text x="62" y="667" font-size="22" fill="#ac6500" text-anchor="start" font-weight="700">아날로그 입력: 0~3.3V 범위로 제한</text>
+<text x="62" y="703" font-size="18" fill="#172b42" text-anchor="start" font-weight="400">MQ-4 전원은 5V. AOUT 최대 전압과 분압 설치 여부는 미확인입니다.</text>
+<text x="62" y="737" font-size="17" fill="#172b42" text-anchor="start" font-weight="400">그림의 CH0/CH1 경로는 채널 배정입니다. 5V AOUT 직결을 권장하는 배선도가 아닙니다.</text>
+<text x="40" y="811" font-size="15" fill="#52677e" text-anchor="start" font-weight="400">SPI는 /dev/spidev0.0 · 토양수분은 CH2에서 CH4로 이동 · VREF는 실측 전까지 공칭 3.3V</text>
+<text x="40" y="828" font-size="13" fill="#52677e" text-anchor="start" font-weight="400">BIOCOVER · 2026-09-13 · 개념 배선도 / 실물 축척 아님 · 출처·확인 범위: docs/hardware-guide.md</text>
+</svg>
