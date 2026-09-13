@@ -98,3 +98,13 @@ Jetson 진단의 사용자 공간 ioctl 전환·스케줄링·IRQ 처리와 실�
 그림만으로 내장 저항의 정확한 값과 전체 연결을 확정하지 않습니다. 핀은 사진의 좌우보다 실제 기판의 실크 표시를 기준으로 연결해야 합니다.
 현재 지정은 GND→P6, VCC→P17 3.3V, DAT→P15입니다. 아직 VCC를 5V로 바꾸지 않았습니다.
 다음 전기적 확인은 전원·Jetson 연결을 분리한 모듈의 VCC–DAT 저항 측정이며, 사용자에게 멀티미터 사용 가능 여부를 확인합니다.
+
+## P15 직접 레지스터 접근 진단 준비
+
+사용자가 연결선은 약 30cm, DATA는 물리 P15라고 확인했습니다. 내장 풀업과 3.3V 배선 유지, 외부 저항 추가/핀 이동 없음.
+물리 P15는 PN.01, gpiochip0 offset 85로 같은 핀입니다.
+
+GPIO ioctl 전환 지연을 분리하기 위해 `scripts/dht22_mmio.c`를 준비했습니다. 실제 DT의 gpio 레지스터 base=0x02210000와 [Linux Tegra GPIO 구현](https://raw.githubusercontent.com/torvalds/linux/master/drivers/gpio/gpio-tegra186.c)의 N 포트 bank=2/port=1을 확인하여 PN.01 주소 0x02212220을 계산했습니다.
+프로그램은 보드·GPIO 이름·점유·입력 상태를 확인하고 P15만 LOW로 구동한 뒤 입력으로 해제해 폴링합니다. HIGH 강제 구동 없이 측정하고 저장한 P15 제어 레지스터를 복원합니다. P7·SPI·pinmux·부팅 파일은 변경하지 않습니다.
+
+컴파일 `gcc -O2 -Wall -Wextra -Werror` 성공. sudo -n 실행은 암호 요구로 중단됐으므로 실제 MMIO 실행·센서 수신은 아직 미검증입니다. 사용자에게 최대 20초 제한과 실시간 우선순위 실행 명령을 안내합니다.
