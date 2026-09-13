@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Local-only sensor dashboard. No recording until a browser presses Start."""
+"""IP-accessible sensor dashboard. No recording until a browser presses Start."""
 import argparse
 import fcntl
+import ipaddress
 from pathlib import Path
 import signal
 from urllib.parse import urlparse
@@ -17,9 +18,13 @@ def create_app(engine):
     app.config['MAX_CONTENT_LENGTH'] = 1024
 
     @app.before_request
-    def local_only():
-        if request.host.split(':')[0] not in ('localhost', '127.0.0.1'):
-            return jsonify(error='로컬 주소로 접속해 주세요.'), 403
+    def check_request():
+        hostname = urlparse(request.host_url).hostname
+        if hostname != 'localhost':
+            try:
+                ipaddress.ip_address(hostname)
+            except ValueError:
+                return jsonify(error='Jetson의 IP 주소로 접속해 주세요.'), 403
         if request.method == 'POST':
             if not request.is_json:
                 return jsonify(error='JSON 요청이 필요합니다.'), 415
@@ -67,6 +72,7 @@ def create_app(engine):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--port', type=int, default=8080)
+    parser.add_argument('--host', default='0.0.0.0', help='IPv4 listen address; default all interfaces')
     parser.add_argument('--data-dir', type=Path, default=Path(__file__).resolve().parents[1] / 'data/web')
     args = parser.parse_args()
     args.data_dir.mkdir(parents=True, exist_ok=True)
@@ -76,11 +82,11 @@ def main():
     except BlockingIOError:
         raise SystemExit('이미 이 데이터 폴더의 대시보드가 실행 중입니다.')
     engine = Engine(Sensors(), args.data_dir)
-    server = make_server('127.0.0.1', args.port, create_app(engine), threaded=True)
+    server = make_server(args.host, args.port, create_app(engine), threaded=True)
     def terminate(signum, frame):
         raise KeyboardInterrupt
     signal.signal(signal.SIGTERM, terminate)
-    print(f'Biocover: http://127.0.0.1:{args.port} (시작 버튼을 누르기 전에는 저장하지 않음)', flush=True)
+    print(f'Biocover listening: {args.host}:{args.port} (접속: http://<Jetson-IP>:{args.port}; 시작 전 미저장)', flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

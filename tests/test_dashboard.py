@@ -58,6 +58,14 @@ class DashboardTests(unittest.TestCase):
     def test_origin_guard(self):
         self.assertEqual(self.client.post('/api/start').status_code, 415)
         self.assertEqual(self.client.post('/api/start', json={}, headers={'Origin':'https://bad.example'}).status_code, 403)
+    def test_ip_access(self):
+        base='http://192.168.123.101:8080'
+        self.assertEqual(self.client.get('/api/state', base_url=base).status_code, 200)
+        self.assertEqual(self.client.post('/api/heartbeat', base_url=base, json={},
+                                         headers={'Origin':base}).status_code, 200)
+        self.assertEqual(self.client.post('/api/heartbeat', base_url=base, json={},
+                                         headers={'Origin':'http://other.example'}).status_code, 403)
+        self.assertEqual(self.client.get('/api/state', base_url='http://other.example').status_code, 403)
     def test_cadence_pause_and_finite_aggregation(self):
         self.engine.interval = .08
         self.engine.start()
