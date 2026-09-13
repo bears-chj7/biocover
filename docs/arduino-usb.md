@@ -100,3 +100,55 @@ NaN을 0으로 대체하지 않고 결측으로 보존했다.
 
 현재 ch341 로드 및 brltty 차단은 임시 상태다. 재부팅 후 자동 수집하려면
 영구 모듈 설치와 CH340에 대한 brltty 충돌 방지 설정을 별도로 완료해야 한다.
+
+## 영구 설정 및 자동 CSV 수집 (적용 준비 완료)
+
+사용자가 다음 단계를 모두 진행하도록 요청하여 설치 스크립트를 작성했다.
+에이전트의 `sudo -n` 실행은 비밀번호 필요로 중단되어, 시스템 적용은 아직 하지 못했다.
+사용자 터미널에서 저장소 루트 기준 다음 한 명령으로 적용 및 실측 검증한다.
+
+```bash
+sudo python3 scripts/install_arduino_usb.py
+```
+
+변경 사항:
+
+- 현재 커널의 `/lib/modules/5.15.148-tegra/extra/biocover/ch341.ko`와
+  `/etc/modules-load.d/biocover-ch341.conf` 설치. 커널 업데이트 시 재빌드 필요.
+- `/etc/udev/rules.d/85-brltty.rules`: 배포판 규칙을 복사하여 CH340
+  `1a86:7523` 일치 행만 제외. 다른 점자장치 규칙은 유지한다.
+  CH340 기반 점자장치도 같은 ID라 이 예외에 해당한다.
+  이 로컬 복사본은 패키지 규칙보다 우선하므로 brltty 업데이트 시 재검토해야 한다.
+- `/etc/udev/rules.d/78-biocover-uno.rules`: CH340을 ModemManager 검색에서
+  제외하고 judgejack에 포트 접근 권한을 부여하며 `/dev/biocover-uno`를 생성한다.
+  CH340 하나만 연결하는 구성이다. 여러 대의 구분은 별도 규칙이 필요하다.
+- `/etc/systemd/system/biocover-uno.service`: judgejack 권한으로 자동 수집.
+  부팅 시 시작, USB 분리나 읽기 실패 시 10초 후 재시도한다.
+- `data/arduino/uno-UTC시각.csv`: 서비스 시작마다 새 파일 생성,
+  행마다 flush. 실제 데이터 디렉터리는 Git에서 제외한다.
+  자동 삭제/보존 기한은 설정하지 않았으므로 디스크 사용량을 관리해야 한다.
+
+설치 전 파일과 서비스 상태를 `/var/backups/biocover/UTC시각/manifest.json` 및
+하위 원본 파일로 백업한다. 다른 내용의 기존 설정이나 심볼릭 링크는 덮어쓰지 않고 중단한다.
+SPI, P7/P15 오버레이, /boot는 변경하지 않는다. 시스템 적용 도중 오류가 발생하면
+백업 위치를 확인한다. 자동 원복은 하지 않으며 일부 설정이 적용된 상태일 수 있다.
+
+수신기는 포트 설정 직후 이전 입력 버퍼를 비우고 빈 행을 건너뛰도록 보완했다.
+새 결측값은 계속 기록한다. 가상 시리얼 검사 및 systemd 서비스 문법 검증 통과.
+설치 스크립트는 새 CSV에서 최소 5개 행과 마지막 3개 행의 유효값, 서비스 active를
+최대 30초 동안 확인한다. 이는 짧은 연속 수집 검증이며 재부팅 시험을 대신하지 않는다.
+
+설치 후 확인:
+
+```bash
+systemctl status biocover-uno.service --no-pager
+journalctl -u biocover-uno.service -n 20 --no-pager
+```
+
+서비스가 포트를 사용하므로 수동 읽기 전에 `sudo systemctl stop biocover-uno.service`로
+중지한다. 재개는 `sudo systemctl start biocover-uno.service`.
+자동 수집 해제는 `sudo systemctl disable --now biocover-uno.service`.
+전체 설정을 원복할 때는 먼저 서비스를 중지/비활성화하고 manifest의 각 파일을
+백업으로 복원한다(원래 없던 파일만 제거). 그 뒤 `depmod -a`,
+`udevadm control --reload-rules`, `systemctl daemon-reload`를 실행한다.
+로드된 드라이버 및 기존 runtime mask까지 초기화하려면 재부팅한다.

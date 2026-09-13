@@ -90,6 +90,8 @@ def read_samples(port, count, timeout, output):
         attrs[4] = attrs[5] = termios.B9600
         attrs[6][termios.VMIN] = attrs[6][termios.VTIME] = 0
         termios.tcsetattr(fd, termios.TCSANOW, attrs)
+        # Discard bytes queued before setting 9600/8N1; a new row follows in ~2s.
+        termios.tcflush(fd, termios.TCIFLUSH)
         print(f'Reading {port}: 9600 baud, 8N1', file=sys.stderr)
         writer = csv.DictWriter(output, fieldnames=['received_at_utc'] + HEADER + ['invalid_fields']) if output else None
         if writer:
@@ -109,6 +111,8 @@ def read_samples(port, count, timeout, output):
             buffer += chunk
             while b'\n' in buffer:
                 line, buffer = buffer.split(b'\n', 1)
+                if not line.strip():
+                    continue
                 try:
                     row = parse_line(line.decode('ascii').strip())
                 except (ValueError, UnicodeError, csv.Error) as exc:

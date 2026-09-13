@@ -5,3 +5,4 @@ build/
 *.dtbo
 *.dtb
 .env
+data/
