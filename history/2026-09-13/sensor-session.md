@@ -108,3 +108,10 @@ GPIO ioctl 전환 지연을 분리하기 위해 `scripts/dht22_mmio.c`를 준비
 프로그램은 보드·GPIO 이름·점유·입력 상태를 확인하고 P15만 LOW로 구동한 뒤 입력으로 해제해 폴링합니다. HIGH 강제 구동 없이 측정하고 저장한 P15 제어 레지스터를 복원합니다. P7·SPI·pinmux·부팅 파일은 변경하지 않습니다.
 
 컴파일 `gcc -O2 -Wall -Wextra -Werror` 성공. sudo -n 실행은 암호 요구로 중단됐으므로 실제 MMIO 실행·센서 수신은 아직 미검증입니다. 사용자에게 최대 20초 제한과 실시간 우선순위 실행 명령을 안내합니다.
+
+### MMIO 초기 보호 검사 수정
+
+사용자 실행은 `Unexpected P15 config: 0xd ctl=0x1; no MMIO writes.`로 종료했습니다. 이 실행에서는 GPIO 핸들 요청 후 MMIO 쓰기가 일어나지 않았습니다.
+0x0d는 GPIO 활성 + double-edge trigger 종류 비트이며 OUT·debounce·IRQ enable은 꺼져 있습니다. 이전 이벤트 요청이 남긴 비활성 trigger 종류까지 거부한 검사 조건을 수정했습니다.
+수정본도 출력·debounce·활성 IRQ 상태는 거부합니다. 진단 중에는 비활성 trigger 비트를 지운 입력 설정을 사용하고 종료 시 원래 cfg를 복원합니다. 보드·GPIO 소유권·입력 검사는 유지합니다.
+컴파일 성공, 수정 후 실제 측정은 사용자 재실행 대기입니다.

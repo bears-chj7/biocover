@@ -52,8 +52,9 @@ int main(void){
     if(map==MAP_FAILED){perror("mmap");close(mem);close(req.fd);close(chip);return 1;}
     volatile uint32_t *reg=(volatile uint32_t *)((char *)map+(addr-base));
     uint32_t cfg=reg[0],ctl=reg[3],value=reg[4];
-    /* Acquired input must be floated, enabled and not interrupt-driven. */
-    if(!(cfg&1)||(cfg&0x7e)||!(ctl&1)){
+    /* Reject output, debounce or enabled IRQ. Dormant trigger-type/level bits
+     * may remain after a previous edge request and are not active IRQs. */
+    if(!(cfg&1)||(cfg&0x62)||!(ctl&1)){
         fprintf(stderr,"Unexpected P15 config: 0x%x ctl=0x%x; no MMIO writes.\n",cfg,ctl);
         munmap(map,(size_t)page);close(mem);close(req.fd);close(chip);return 1;
     }
@@ -63,15 +64,18 @@ int main(void){
         munmap(map,(size_t)page);close(mem);close(req.fd);close(chip);return 1;
     }
     printf("{\"pin\":15,\"address\":\"0x02212220\",\"config\":%u,\"idle\":%u}\n",cfg,reg[2]&1);fflush(stdout);
+    /* Clear dormant trigger settings only during the owned diagnostic.
+     * Preserve the acquired configuration for restoration at the end. */
+    uint32_t polling_cfg = cfg & ~0x7eU;
     int valid=0,error=0;
     for(int attempt=1;attempt<=5&&!stop;attempt++){
         int levels[100]={0};int64_t times[100]={0};double highs[50]={0};
         if(!(reg[2]&1)){fprintf(stderr,"P15 idle LOW; stop before request.\n");error=1;break;}
         /* Drive only LOW, then float before changing direction to input. */
-        put(&reg[4],value&~1U);put(&reg[0],cfg|3U);put(&reg[3],ctl&~1U);
+        put(&reg[4],value&~1U);put(&reg[0],polling_cfg|3U);put(&reg[3],ctl&~1U);
         int64_t low_start=ns();while(!stop&&ns()-low_start<1100000){}
         unsigned low_level=reg[2]&1;
-        put(&reg[3],ctl|1U);put(&reg[0],cfg&~2U);
+        put(&reg[3],ctl|1U);put(&reg[0],polling_cfg);
         int64_t begin=ns();int count=1;levels[0]=reg[2]&1;times[0]=begin;
         while(!stop&&ns()-begin<7000000&&count<100){
             int v=reg[2]&1;
