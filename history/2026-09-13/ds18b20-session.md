@@ -110,3 +110,13 @@ Family 0 ... is not registered.
 이번에는 이전의 00-… ID가 없으며 `w1_master_slave_count=0`, `w1_master_slaves=not found.`입니다. 조회 시 탐색 시도는 40회, search=-1(계속 탐색)이었습니다. 정상 28-… 센서와 온도는 아직 없습니다.
 이번 부팅 로그에는 이전의 family0 가짜 ID·max_slave_count 오류가 관찰되지 않았습니다. 풀업 추가 후 탐색 양상이 달라졌으나 센서 통신 성공을 뜻하지 않습니다.
 다음은 DS18 DATA–GND 실제 전압 확인으로 풀업 경로와 신호 상태를 검증합니다. 이 점검 중 P7/드라이버 설정 변경은 하지 않았습니다.
+
+## I. 전압 재확인 및 RESET 응답 검사 준비
+
+사용자가 앞선 값은 VDD–GND였다고 정정한 뒤 DATA–GND를 다시 측정해 3.4V라고 확인했습니다. 최종 보고는 VDD–GND 3.4V, DATA–GND 3.4V입니다. 이는 DC 전압 확인이며 실제 통신 파형 검증은 아닙니다.
+
+`check_ds18_presence.py`와 `ds18_presence.c`를 준비했습니다. w1-gpio/onewire를 잠시 unbind하고, P7 GPIO 소유권·보드·레지스터 입력 일치를 확인한 뒤 직접 RESET LOW 약500µs와 응답 파형을 3회 관찰합니다. HIGH 강제 구동·EEPROM 쓰기·온도 변환은 하지 않습니다. 검사 종료·일반 오류·SIGINT/SIGTERM 때 자식 종료를 확인하고 P7 드라이버를 bind합니다. 강제 SIGKILL/전원 차단까지 복구를 보장할 수는 없습니다.
+
+P7 주소는 0x022102c0 (GPIO base0x02210000 + AC bank0/port1 + pin6*0x20)입니다. SPI·DHT22·pinmux·부팅 파일·설치 모듈은 변경하지 않습니다. CPU2/FIFO50 검사 프로세스는 8초 제한이며 종료 처리를 거친 뒤 드라이버 복구합니다.
+
+C 빌드(-O2 -Wall -Wextra -Werror)와 Python 문법 검사 성공. 실제 실행은 아직 하지 않았으며 사용자 관리자 실행 대기입니다. presence_candidate는 초기화 응답 후보이지 온도·ROM CRC 검증 완료를 뜻하지 않습니다.
