@@ -14,9 +14,9 @@ FIELDS = ['timestamp', 'sequence', 'elapsed_s'] + KEYS + ['mq1_v', 'mq2_v', 'soi
 
 
 class Engine:
-    def __init__(self, source, directory, interval=5, lease=45):
+    def __init__(self, source, directory, interval=5):
         self.source, self.directory = source, Path(directory)
-        self.interval, self.lease = interval, lease
+        self.interval = interval
         self.lock = threading.RLock()
         self.wake = threading.Event()
         self.shutdown_event = threading.Event()
@@ -98,7 +98,7 @@ class Engine:
             self.error = self.reason = ''
             self.last_file = None
             self.started_at = datetime.now(timezone.utc).isoformat()
-            self.began = self.heartbeat_at = self.next_at = time.monotonic()
+            self.began = self.next_at = time.monotonic()
             self.wake.set()
 
     def pause(self):
@@ -112,7 +112,7 @@ class Engine:
             if self.state != 'paused':
                 raise ValueError('일시정지 상태가 아닙니다.')
             self.state = 'running'
-            self.heartbeat_at = self.next_at = time.monotonic()
+            self.next_at = time.monotonic()
             self.wake.set()
 
     def stop(self, reason='사용자 정지'):
@@ -137,8 +137,8 @@ class Engine:
                     self.last_file = final.name
 
     def heartbeat(self):
-        with self.lock:
-            self.heartbeat_at = time.monotonic()
+        # Compatibility with older pages. Browser presence never controls recording.
+        pass
 
     def tick(self):
         with self.lock:
@@ -174,8 +174,6 @@ class Engine:
             try:
                 with self.lock:
                     now = time.monotonic()
-                    if self.state in ('running', 'paused') and now-self.heartbeat_at > self.lease:
-                        self.stop('브라우저 연결 시간 초과')
                     if self.state == 'running' and now >= self.next_at:
                         self.tick()
                         self.next_at = max(self.next_at + self.interval, time.monotonic()+.01)

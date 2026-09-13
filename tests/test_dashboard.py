@@ -26,7 +26,7 @@ class Fake:
 class DashboardTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.engine = Engine(Fake(), self.tmp.name, interval=100, lease=100)
+        self.engine = Engine(Fake(), self.tmp.name, interval=100)
         self.client = create_app(self.engine).test_client()
     def tearDown(self):
         self.engine.close()
@@ -81,11 +81,21 @@ class DashboardTests(unittest.TestCase):
         self.engine.pause()
         self.assertIsNone(self.engine.rows[-1]['ds18'])
         self.assertEqual(self.engine.stats['ds18']['count'], count)
-    def test_disconnected_client_stops(self):
-        self.engine.lease = .1
+    def test_disconnected_client_keeps_recording(self):
+        self.engine.interval = .1
         self.engine.start()
+        # Simulate a heartbeat older than the former 45-second deadline.
+        self.engine.heartbeat_at = time.monotonic() - 60
         time.sleep(.5)
-        self.assertEqual(self.engine.state, 'stopped')
+        self.assertEqual(self.engine.state, 'running')
+        self.assertGreaterEqual(self.engine.count, 2)
+        self.assertIsNone(self.engine.last_file)
+        self.engine.pause()
+        count = self.engine.count
+        time.sleep(.3)
+        self.assertEqual(self.engine.state, 'paused')
+        self.assertEqual(self.engine.count, count)
+        self.engine.stop()
         self.assertTrue(self.engine.last_file)
     def test_stale_usb_not_reused(self):
         from unittest.mock import patch
@@ -104,7 +114,7 @@ class Fake:
  def start(self): pass
  def close(self): pass
  def sample(self): return dict(ds18=27,errors=[])
-e=Engine(Fake(),sys.argv[2],interval=.05,lease=100)
+e=Engine(Fake(),sys.argv[2],interval=.05)
 e.start()
 time.sleep(30)
 '''
