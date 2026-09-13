@@ -13,8 +13,8 @@ sudo python3 scripts/install_dashboard.py
 ```
 
 설치기는 기존 `biocover-uno.service` 자동 CSV 수집을 중지/비활성화하고
-`biocover-web.service`를 설치·활성화한다. 서비스는 judgejack 권한과 gpio 보조 그룹으로
-실행하며 재부팅 후에도 웹서버만 시작한다. **시작 버튼을 누르기 전에는 측정 CSV가 없다.**
+`biocover-web.service`를 설치하되 중지/비활성화 상태로 둔다. 서비스는 judgejack 권한과 gpio 보조 그룹으로
+실행한다. 부팅 및 서비스 오류 후 자동 실행하지 않으며 사용자가 직접 시작한다. **시작 버튼을 누르기 전에는 측정 CSV가 없다.**
 기존 웹 서비스 파일이 있으면 `/var/backups/biocover/UTC시각/`에 백업한다.
 사용자가 관리자 비밀번호를 입력해야 하며 에이전트의 sudo -n 시도는 실패했다.
 이 문서 작성 시점에서 시스템 설치/실제 센서 웹 수신 검증은 대기 상태다.
@@ -88,6 +88,26 @@ node --check web/static/app.js
 설치 후 실제 화면과 실측 수신의 최종 확인이 필요하다.
 
 ## 서비스 관리
+
+설치는 한 번만 수행한다. 이미 자동 실행으로 설치했으면 아래 명령을 한 번 실행한다.
+
+```bash
+sudo systemctl disable --now biocover-web.service
+```
+
+필요할 때 시작하고 브라우저에서 http://127.0.0.1:8080 을 연다.
+
+```bash
+sudo systemctl start biocover-web.service
+```
+
+사용을 마치면 화면의 정지 버튼으로 측정을 종료한 뒤 웹서버도 중지할 수 있다.
+서비스 중지 자체도 진행 중 CSV를 마무리한다.
+
+```bash
+sudo systemctl stop biocover-web.service
+```
+
 
 ```bash
 systemctl status biocover-web.service --no-pager

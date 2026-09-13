@@ -11,7 +11,10 @@
 sudo python3 scripts/install_dashboard.py
 ```
 
-설치 후 Jetson에서 http://127.0.0.1:8080 접속. 기존 자동 CSV 서비스는 설치기가 해제한다.
+설치는 한 번만 실행한다. 웹서비스는 부팅 시 자동 실행하지 않는다.
+필요할 때 `sudo systemctl start biocover-web.service`로 시작하고
+Jetson에서 http://127.0.0.1:8080 접속. 종료는 `sudo systemctl stop biocover-web.service`.
+기존 자동 CSV 서비스는 설치기가 해제한다.
 
 ## 보드·센서 연결 그림
 

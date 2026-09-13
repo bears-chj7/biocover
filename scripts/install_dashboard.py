@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-"""Switch legacy recording off and start the local dashboard, idle by default."""
+"""Install the local dashboard for manual service startup only."""
 from datetime import datetime, timezone
 import os
 from pathlib import Path
 import pwd
 import shutil
 import subprocess
-import time
-from urllib.request import urlopen
 
 root = Path(__file__).resolve().parents[1]
 if os.geteuid() != 0:
@@ -38,8 +36,7 @@ Group=judgejack
 SupplementaryGroups=gpio
 WorkingDirectory={root}
 ExecStart=/usr/bin/python3 {root}/web/app.py
-Restart=on-failure
-RestartSec=5
+Restart=no
 TimeoutStopSec=15
 NoNewPrivileges=true
 UMask=0027
@@ -51,15 +48,8 @@ WantedBy=multi-user.target
 ''')
 target.chmod(0o644)
 subprocess.run(['systemctl', 'daemon-reload'], check=True)
-subprocess.run(['systemctl', 'enable', 'biocover-web.service'], check=True)
-subprocess.run(['systemctl', 'restart', 'biocover-web.service'], check=True)
-for _ in range(20):
-    try:
-        with urlopen('http://127.0.0.1:8080/api/state', timeout=1) as response:
-            print(response.read().decode())
-        print('Ready: http://127.0.0.1:8080 — CSV recording begins only after Start.')
-        break
-    except OSError:
-        time.sleep(.5)
-else:
-    raise SystemExit('Server not ready. Check journalctl -u biocover-web.service -n 30.')
+subprocess.run(['systemctl', 'disable', '--now', 'biocover-web.service'], check=True)
+print('Installed for manual startup. Web service stopped; boot autostart disabled.')
+print('Start: sudo systemctl start biocover-web.service')
+print('Open: http://127.0.0.1:8080')
+print('Stop: sudo systemctl stop biocover-web.service')
