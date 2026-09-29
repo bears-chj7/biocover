@@ -21,6 +21,17 @@ const names = {idle:'파일 선택 대기',ready:'재생 준비',running:'재생
 let busy = false;
 let lastCursor = -1;
 let lastRender = -Infinity;
+let scrubbing = false, resumeAfterScrub = false;
+// Upgrade cached templates without restarting either server.
+if ($('progress').tagName !== 'INPUT') {
+  const slider = document.createElement('input');
+  slider.id = 'progress'; slider.type = 'range'; slider.min = '0'; slider.max = '1';
+  slider.step = '0.001'; slider.value = '0'; slider.setAttribute('aria-label','재생 타임라인');
+  $('progress').replaceWith(slider);
+}
+for (const [value,label] of [['3600','최근 1시간'],['7200','최근 2시간'],['all','전체']]) {
+  if (![...$('window').options].some(option => option.value === value)) $('window').add(new Option(label,value));
+}
 
 for (const [key,label,model,unit,color] of sensors) {
   const card = document.createElement('article');
@@ -60,6 +71,7 @@ function controls() {
   for (const button of $('files').querySelectorAll('button')) button.disabled = busy;
   $('slower').disabled = player.speed <= 1;
   $('faster').disabled = player.speed >= 50;
+  $('progress').disabled = busy || !player.recording || !player.duration;
 }
 
 function render(force=false) {
@@ -69,6 +81,7 @@ function render(force=false) {
   $('samples').textContent = `${player.cursor.toLocaleString()} / ${(player.recording?.count || 0).toLocaleString()}행`;
   $('elapsed').textContent = `${duration(player.position)} / ${duration(player.duration || 0)}`;
   $('progress').value = player.duration ? player.position / player.duration : player.state === 'ended' ? 1 : 0;
+  $('progress').setAttribute('aria-valuetext', `${duration(player.position)} / ${duration(player.duration || 0)}`);
   $('refresh').textContent = player.timestamp === null ? '원본 시각 기준' : `재생 시각 ${localTime(player.timestamp)} · ${player.speed}배속`;
   $('session-time').textContent = player.recording ? new Date(player.recording.started_at).toLocaleString('ko-KR') + ' 시작 기록' : 'CSV를 선택하세요';
   if (player.recording) {
@@ -177,9 +190,27 @@ $('speed').onkeydown = event => { if (event.key === 'Enter') { event.preventDefa
 $('slower').onclick = () => setSpeed(Math.max(1,player.speed-1));
 $('faster').onclick = () => setSpeed(Math.min(50,player.speed+1));
 $('window').onchange = () => drawAll();
+$('progress').oninput = () => {
+  player.seek(Number($('progress').value) * player.duration);
+  render(true);
+};
+$('progress').onpointerdown = () => {
+  scrubbing = true;
+  resumeAfterScrub = player.state === 'running';
+  player.pause();
+};
+function finishScrub() {
+  if (!scrubbing) return;
+  scrubbing = false;
+  if (resumeAfterScrub) player.resume();
+  render(true);
+}
+window.addEventListener('pointerup',finishScrub);
+window.addEventListener('pointercancel',finishScrub);
+$('progress').onblur = finishScrub;
 
 function drawAll() {
-  const windowMs = Number($('window').value)*1000;
+  const windowMs = $('window').value === 'all' ? Math.max(player.position,1000) : Number($('window').value)*1000;
   const rows = player.visible(windowMs);
   for (const sensor of sensors) draw(sensor,rows,windowMs);
 }

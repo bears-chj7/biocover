@@ -46,6 +46,20 @@ def create_app(engine):
     def state():
         return jsonify(engine.snapshot())
 
+    @app.get('/api/history')
+    def history():
+        try:
+            after = int(request.args.get('after', '0'))
+            limit = int(request.args.get('limit', '5000'))
+            if after < 0 or not 1 <= limit <= 10000:
+                raise ValueError()
+        except ValueError:
+            return jsonify(error='after는 0 이상, limit는 1~10000 정수여야 합니다.'), 400
+        try:
+            return jsonify(engine.history(after, limit))
+        except OSError:
+            return jsonify(error='세션 CSV를 읽을 수 없습니다.'), 503
+
     @app.post('/api/<action>')
     def control(action):
         if action not in ('start', 'pause', 'resume', 'stop', 'heartbeat'):

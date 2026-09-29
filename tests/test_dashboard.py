@@ -58,6 +58,28 @@ class DashboardTests(unittest.TestCase):
     def test_origin_guard(self):
         self.assertEqual(self.client.post('/api/start').status_code, 415)
         self.assertEqual(self.client.post('/api/start', json={}, headers={'Origin':'https://bad.example'}).status_code, 403)
+
+    def test_history_reads_older_csv_rows_without_changing_session(self):
+        from unittest.mock import patch
+        self.post('start')
+        with patch('engine.os.fsync'):
+            for _ in range(1500):
+                self.engine.tick()
+        self.engine.pause()
+        count = self.engine.count
+        self.assertEqual(len(self.engine.snapshot()['rows']), 720)
+        first = self.client.get('/api/history?limit=1000').json
+        second = self.client.get('/api/history?after=1000').json
+        self.assertEqual(len(first['rows']), 1000)
+        self.assertEqual(first['rows'][0]['sequence'], 1)
+        self.assertEqual(len(first['rows']) + len(second['rows']), count)
+        self.assertEqual(second['through'], count)
+        self.assertEqual(self.engine.state, 'paused')
+        self.assertEqual(self.engine.count, count)
+        self.post('stop')
+        self.assertEqual(self.client.get('/api/history').json['through'], count)
+        self.assertEqual(self.client.get('/api/history?limit=0').status_code, 400)
+        self.assertEqual(self.client.get('/api/history?after=-1').status_code, 400)
     def test_ip_access(self):
         base='http://192.168.123.101:8080'
         self.assertEqual(self.client.get('/api/state', base_url=base).status_code, 200)

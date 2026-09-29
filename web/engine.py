@@ -206,6 +206,36 @@ class Engine:
                 sorted(self.directory.glob('session-*.csv'), reverse=True)
                 if not p.name.endswith('.partial.csv')][:100]
 
+    def history(self, after=0, limit=5000):
+        # Open the session file under the lock, then read outside it. This keeps
+        # rename/stop safe without holding up sensor acquisition during CSV I/O.
+        with self.lock:
+            session, count = self.started_at, self.count
+            path = self.path if self.file else self.directory / self.last_file if self.last_file else None
+            if path is None:
+                return dict(session=session, rows=[], through=0, total=count)
+            handle = path.open(newline='')
+        rows = []
+        through = min(after, count)
+        with handle:
+            for index, source in enumerate(csv.DictReader(handle), 1):
+                if index > count:  # Never consume a concurrent partial write.
+                    break
+                if index <= after:
+                    continue
+                row = dict(timestamp=source['timestamp'], sequence=int(source['sequence']))
+                for key in KEYS:
+                    try:
+                        value = float(source[key])
+                    except (ValueError, TypeError):
+                        value = None
+                    row[key] = value if value is not None and math.isfinite(value) else None
+                rows.append(row)
+                through = index
+                if len(rows) >= limit:
+                    break
+        return dict(session=session, rows=rows, through=through, total=count)
+
     def close(self):
         self.shutdown_event.set()
         self.wake.set()

@@ -96,3 +96,28 @@ test('an earlier animation timestamp cannot move the anchor backwards',()=>{
   p.tick(90); p.tick(110);
   assert.equal(p.position,600);
 });
+
+test('seek backwards rebuilds statistics and logs without future values',()=>{
+  const {player:p,advance}=setup(); p.replay(); advance(12000); p.pause();
+  p.seek(6000);
+  assert.equal(p.state,'paused'); assert.equal(p.cursor,2);
+  assert.equal(p.stats.mq1.mean,100.5); assert.equal(p.stats.ds18.count,1);
+  assert.equal(p.recent().length,2); assert.equal(p.visible(Infinity).length,2);
+  p.seek(0); assert.equal(p.cursor,1); assert.equal(p.stats.mq1.mean,100);
+});
+
+test('seeking during playback continues from the target; ended can seek and resume',()=>{
+  const {player:p,advance}=setup(); p.replay(); p.seek(9000); advance(1000);
+  assert.equal(p.state,'running'); assert.equal(p.cursor,3);
+  p.seek(999999); assert.equal(p.state,'ended'); assert.equal(p.cursor,4);
+  p.seek(6000); assert.equal(p.state,'paused'); p.resume(); advance(4000);
+  assert.equal(p.cursor,3); assert.equal(p.position,10000);
+});
+
+test('1 hour, 2 hour and whole-session windows include the intended records',()=>{
+  const {player:p}=setup(Array.from({length:2000},(_,i)=>i*5000));
+  p.seek(p.duration);
+  assert.equal(p.visible(3600000).length,721);
+  assert.equal(p.visible(7200000).length,1441);
+  assert.equal(p.visible(Infinity).length,2000);
+});

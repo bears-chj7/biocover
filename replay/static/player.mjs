@@ -72,6 +72,18 @@ export class Player {
     this.state = 'stopped';
   }
 
+  seek(position) {
+    if (!this.recording) return;
+    const target = Number(position);
+    if (!Number.isFinite(target)) throw Error('이동할 시각이 올바르지 않습니다.');
+    const running = this.state === 'running';
+    this.reset();
+    this.position = Math.max(0, Math.min(this.duration, target));
+    this.state = 'running';
+    this.tick(this.anchor); // Rebuild aggregates from the first row to the new position.
+    if (this.state !== 'ended' && !running) this.state = 'paused';
+  }
+
   setSpeed(value) {
     const speed = Number(value);
     if (!Number.isInteger(speed) || speed < 1 || speed > 50) {
