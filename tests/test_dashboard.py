@@ -1,4 +1,5 @@
 import csv
+import io
 import os
 from pathlib import Path
 import subprocess
@@ -88,6 +89,44 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(self.client.post('/api/heartbeat', base_url=base, json={},
                                          headers={'Origin':'http://other.example'}).status_code, 403)
         self.assertEqual(self.client.get('/api/state', base_url='http://other.example').status_code, 403)
+
+    def test_single_port_shell_and_replay_do_not_control_live_measurement(self):
+        shell = self.client.get('/').text
+        self.assertIn('id="tab-live"', shell)
+        self.assertIn('id="tab-replay"', shell)
+        self.assertIn('/live?embedded=1', shell)
+        self.assertIn('/replay/?embedded=1', shell)
+        self.assertNotIn(':8081', shell)
+        self.assertIn('id="start"', self.client.get('/live').text)
+        replay = self.client.get('/replay/')
+        self.assertEqual(replay.status_code, 200)
+        self.assertIn('/replay/static/app.mjs', replay.text)
+        self.assertIn("frame-ancestors 'self'", replay.headers['Content-Security-Policy'])
+        self.post('start')
+        self.engine.tick()
+        self.engine.pause()
+        count = self.engine.count
+        partial = self.engine.path.read_bytes()
+        # Replay cannot select or modify the active partial CSV.
+        self.assertEqual(self.client.get('/replay/api/files').json, [])
+        self.assertEqual(self.client.get('/replay/api/recording/'+self.engine.path.name).status_code,404)
+        self.assertEqual(self.client.post('/replay/api/stop',json={}).status_code,404)
+        payload = b'timestamp,ds18,temperature,humidity,mq1,mq2,soil\n' + b'2026-09-29T00:00:00Z,27,28,55,200,100,800\n'*100
+        # Multipart upload > 1 KiB must bypass the live JSON/control size limit.
+        response = self.client.post('/replay/api/upload', data={'file':(io.BytesIO(payload),'uploaded.csv')},
+                                    headers={'Origin':'http://localhost'})
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(response.json['count'],100)
+        self.assertEqual(self.engine.count,count)
+        self.assertEqual(self.engine.state,'paused')
+        self.assertEqual(self.engine.path.read_bytes(),partial)
+        self.assertEqual(self.client.post('/api/pause', data={'file':(io.BytesIO(payload),'uploaded.csv')}).status_code,415)
+        self.assertEqual(self.client.post('/replay/api/upload',data={},headers={'Origin':'https://other.example'}).status_code,403)
+        self.post('stop')
+        self.assertEqual(len(self.client.get('/replay/api/files').json),1)
+        with self.client.get('/replay/static/player.mjs') as asset:
+            self.assertEqual(asset.status_code,200)
+            self.assertIn('javascript',asset.content_type)
     def test_cadence_pause_and_finite_aggregation(self):
         self.engine.interval = .08
         self.engine.start()

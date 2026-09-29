@@ -1,4 +1,5 @@
 import {Player} from './player.mjs';
+const basePath = new URL('../', import.meta.url).pathname.replace(/\/$/, '');
 
 const sensors = [
   ['ds18','토양 온도','DS18B20','°C','#318873',2],
@@ -51,7 +52,7 @@ function error(message='') {
 }
 
 async function api(path, options={}) {
-  const response = await fetch(path, {cache:'no-store', ...options});
+  const response = await fetch(basePath + path, {cache:'no-store', ...options});
   const data = await response.json();
   if (!response.ok) throw Error(data.error || `HTTP ${response.status}`);
   return data;

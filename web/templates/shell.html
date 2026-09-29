@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Biocover · 실시간 및 로그 재생</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/shell.css">
+  <script defer src="/static/shell.js"></script>
+</head>
+<body>
+  <header><a class="brand" href="/"><span class="logo">b</span>BIOCOVER <small>FIELD MONITOR</small></a><span class="connection">실험 모니터</span></header>
+  <nav class="app-tabs" role="tablist" aria-label="모니터 화면 선택">
+    <button id="tab-live" role="tab" aria-selected="true" aria-controls="panel-live" tabindex="0">실시간</button>
+    <button id="tab-replay" role="tab" aria-selected="false" aria-controls="panel-replay" tabindex="-1">로그 재생</button>
+  </nav>
+  <section id="panel-live" role="tabpanel" aria-labelledby="tab-live">
+    <iframe id="frame-live" title="실시간 센서 모니터" src="/live?embedded=1"></iframe>
+  </section>
+  <section id="panel-replay" role="tabpanel" aria-labelledby="tab-replay" hidden>
+    <iframe id="frame-replay" title="CSV 로그 재생" data-src="/replay/?embedded=1"></iframe>
+  </section>
+  <noscript>센서 화면과 재생 기능을 사용하려면 JavaScript를 켜 주세요.</noscript>
+</body>
+</html>

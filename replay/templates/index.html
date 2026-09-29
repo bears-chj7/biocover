@@ -3,9 +3,10 @@
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Biocover · CSV 로그 재생</title>
-  <link rel="stylesheet" href="/static/style.css">
-  <link rel="stylesheet" href="/static/replay.css">
-  <script type="module" src="/static/app.mjs"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='replay.css') }}">
+  <script type="module" src="{{ url_for('static', filename='app.mjs') }}"></script>
+  {% if integrated %}<script defer src="/static/frame.js"></script>{% endif %}
 </head>
 <body>
 <header><a class="brand" href="/"><span class="logo">b</span>BIOCOVER <small>LOG REPLAY</small></a><span class="connection">CSV 재생 전용</span></header>

@@ -1,0 +1,7 @@
+.app-tabs{display:flex;gap:8px;padding:0 5vw;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:10}
+.app-tabs button{border:0;border-radius:0;border-bottom:3px solid transparent;padding:17px 24px;font-weight:600;color:var(--muted);min-height:52px}
+.app-tabs button[aria-selected="true"]{color:var(--green);border-bottom-color:var(--green);background:var(--soft)}
+.app-tabs button:hover{color:var(--green)}
+[role="tabpanel"][hidden]{display:none}
+[role="tabpanel"] iframe{display:block;width:100%;height:3000px;border:0;background:white}
+@media(max-width:650px){.app-tabs{padding:0 18px}.app-tabs button{flex:1;padding:14px 18px}.brand{font-size:16px}}

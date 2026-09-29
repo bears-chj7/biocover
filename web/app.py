@@ -5,12 +5,19 @@ import fcntl
 import ipaddress
 from pathlib import Path
 import signal
+import sys
 from urllib.parse import urlparse
 
 from flask import Flask, jsonify, render_template, request, send_file
 from werkzeug.serving import make_server
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from engine import Engine
 from sensors import Sensors
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from replay.app import create_app as create_replay_app
 
 
 def create_app(engine):
@@ -40,6 +47,10 @@ def create_app(engine):
 
     @app.get('/')
     def index():
+        return render_template('shell.html')
+
+    @app.get('/live')
+    def live():
         return render_template('index.html')
 
     @app.get('/api/state')
@@ -80,6 +91,10 @@ def create_app(engine):
             return jsonify(error='저장된 CSV를 찾을 수 없습니다.'), 404
         return send_file(engine.directory / name, as_attachment=True, download_name=name)
 
+    # Keep upload limits, request guards and APIs separate while sharing one
+    # HTTP listener. Replay never receives the engine or sensor object.
+    replay = create_replay_app(engine.directory, integrated=True)
+    app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {'/replay': replay})
     return app
 
 

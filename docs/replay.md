@@ -1,52 +1,53 @@
 # CSV 로그 재생
 
 저장된 웹 측정 CSV를 기존 대시보드와 같은 카드, 한 행에 한 계열 그래프,
-최신순 로그, 평균·최솟값·최댓값으로 확인한다. 기본 포트는 **8081**이다.
-실시간 측정은 기존 **8080 / biocover-web.service**에서 그대로 진행한다.
+최신순 로그, 평균·최솟값·최댓값으로 확인한다. **실시간과 로그 재생 모두 8080 포트**를 사용한다.
 
 ## 설치와 실행
 
-현재 Jetson에 설치된 Python 3와 Flask를 사용한다. 재생 기능에 새 패키지는 필요 없다.
-다른 환경에서는 먼저 해당 사용자의 Python 환경에 Flask를 설치한다.
+현재 Jetson에 설치된 Python 3와 Flask를 사용한다. 통합 기능에 새 패키지는 필요 없다.
+서비스는 기존 `biocover-web.service` 하나다. 이미 설치된 환경은 재설치할 필요 없이,
+측정을 종료한 상태에서 새 서버 코드를 반영하도록 한 번 재시작한다.
 
 ```bash
-# 최초 한 번, sudo 없이 judgejack 계정에서 실행
-python3 /home/judgejack/working_space/biocover/scripts/install_replay.py
+# 처음 설치하는 장치에서만
+sudo python3 /home/judgejack/working_space/biocover/scripts/install_dashboard.py
 
 # 사용할 때 실행
-systemctl --user start biocover-replay.service
+sudo systemctl start biocover-web.service
 
-# 종료
-systemctl --user stop biocover-replay.service
+# 업데이트 적용 — 측정을 마친 상태에서
+sudo systemctl restart biocover-web.service
+
+# 종료 — 진행 중인 측정 CSV도 마무리
+sudo systemctl stop biocover-web.service
 
 # 상태 및 오류 확인
-systemctl --user status biocover-replay.service --no-pager
-journalctl --user -u biocover-replay.service -n 30 --no-pager
+systemctl status biocover-web.service --no-pager
+journalctl -u biocover-web.service -n 30 --no-pager
 ```
 
-설치기는 `~/.config/systemd/user/biocover-replay.service`만 등록한다.
-서비스를 자동 시작하거나 부팅 자동 실행·linger를 설정하지 않는다.
-사용자 서비스이므로 해당 계정의 사용자 세션이 끝나면 종료될 수 있다.
-기존 재생 서비스 파일의 내용이 다르면 덮어쓰지 않고 확인을 요청한다.
+최초 설치기는 서비스를 중지 상태로 등록하며 부팅 자동 실행은 설정하지 않는다.
 
 | 접속 위치 | 주소 |
 |---|---|
-| Jetson 자체 | http://127.0.0.1:8081 |
-| 같은 네트워크의 PC·모바일 | http://192.168.123.101:8081 |
+| Jetson 자체 | http://127.0.0.1:8080 |
+| 같은 네트워크의 PC·모바일 | http://192.168.123.101:8080 |
+| 재생 탭 바로 열기 | http://192.168.123.101:8080/#replay |
 
-LAN IP는 변경될 수 있다. 서버는 기본적으로 `0.0.0.0:8081`에서 수신한다.
-로그인은 없으며, 방화벽·라우터 설정은 설치기가 변경하지 않는다.
-8080 서비스용 설치기·재시작 명령을 재생 기능에 사용할 필요가 없다.
+상단 **실시간 / 로그 재생** 탭으로 전환한다. 탭을 바꿔도 재생 파일·위치·속도·범위는 유지된다.
+재생 중 다른 탭으로 전환하면 재생 시계는 계속 진행한다. 실시간 측정도 탭 선택과 무관하게 계속된다.
+전체 페이지를 새로고침하면 브라우저의 재생 상태만 초기화되며 실시간 서버의 측정 상태는 유지된다.
 
-서비스 없이 터미널에서 실행할 수도 있다. 실행 중인 재생 서비스와 동시에 같은 포트를 쓰지 않는다.
+과거에 별도 8081 재생 서비스를 실행했다면 통합 적용 후 종료한다.
 
 ```bash
-python3 /home/judgejack/working_space/biocover/replay/app.py --port 8081
-# 종료: Ctrl+C
+systemctl --user stop biocover-replay.service
 ```
 
-다른 포트는 `--port 8082`처럼 지정한다. 실시간 서비스의 기본 포트인 8080은 거부한다.
-`--data-dir /절대경로`로 읽을 CSV 폴더를 바꿀 수 있다.
+`install_replay.py`는 과거 독립 실행 환경용으로 남겨 두었으며 통합 환경에는 사용하지 않는다.
+LAN IP는 변경될 수 있다. 서버는 기본적으로 `0.0.0.0:8080`에서 수신한다.
+로그인은 없으며 방화벽·라우터 설정은 이번 통합에서 변경하지 않는다.
 
 ## 사용 순서
 
@@ -106,14 +107,15 @@ UTF-8(BOM 허용), 최대 20 MiB, 최대 100,000행을 지원한다.
 업로드는 서버 메모리에서만 파싱하고 디스크에 저장하지 않는다. 재생 동작은 브라우저에서
 처리하므로 CSV를 추가 저장하지 않으며, 원본을 덮어쓰거나 이름을 바꾸지 않는다.
 
-## 실시간 측정과 분리
+## 실시간과 재생의 처리 경로
 
-- 서버·서비스·포트와 HTML/CSS/JS를 `replay/`에 별도 구성한다.
-- `web/engine.py`, `web/sensors.py`를 가져오지 않으며 USB/SPI/GPIO 장치를 열지 않는다.
-- 8080 제어 API에 요청하지 않는다. 재생 API에는 실시간 측정 제어 기능이 없다.
-- 재생 시작/정지·서비스 재시작이 실시간 서비스 상태를 바꾸지 않는다.
-- 공통 Jetson의 CPU·메모리는 사용한다. 그래프는 약 10fps로 제한하고,
-  로그는 120행, 그래프 데이터는 선택한 시간 범위로 한정한다.
+- 하나의 웹서비스와 포트에서 `/live`와 `/replay/` 화면을 제공한다.
+- 재생 API와 정적 파일은 `/replay/api/...`, `/replay/static/...` 아래로 분리한다.
+- 재생 앱에는 실시간 엔진이나 센서 객체를 전달하지 않는다. USB/SPI/GPIO를 열지 않는다.
+- 재생 업로드는 메모리에서 처리하며 실시간 JSON 제어 API와 별도의 입력 제한을 적용한다.
+- 탭 전환은 화면 표시만 바꾸며 측정 시작·일시정지·종료 API를 호출하지 않는다.
+- 재생 시작/정지는 브라우저의 재생만 제어한다. 통합 **서비스 종료**는 실시간 측정도 마무리한다.
+- 브라우저 그래프는 약 10fps, 로그는 120행, 그래프 데이터는 선택한 범위로 한정한다.
 
 ## 검증
 

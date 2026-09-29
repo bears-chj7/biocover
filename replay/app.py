@@ -98,7 +98,7 @@ def read_completed(directory, name):
         return file.read(MAX_BYTES + 1)
 
 
-def create_app(data_dir=None):
+def create_app(data_dir=None, integrated=False):
     app = Flask(__name__)
     app.request_class = MemoryRequest
     # Allow multipart framing in addition to the actual CSV limit.
@@ -123,7 +123,7 @@ def create_app(data_dir=None):
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['Content-Security-Policy'] = (
             "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
-            "connect-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'")
+            "connect-src 'self'; object-src 'none'; frame-ancestors 'self'; base-uri 'none'")
         return response
 
     @app.errorhandler(413)
@@ -138,7 +138,7 @@ def create_app(data_dir=None):
 
     @app.get('/')
     def index():
-        return render_template('index.html')
+        return render_template('index.html', integrated=integrated)
 
     @app.get('/api/files')
     def files():
