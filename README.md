@@ -70,6 +70,38 @@ journalctl -u biocover-web.service -n 30 --no-pager
 `active (running)`이면 웹서버 실행 중, `inactive (dead)`이면 중지 상태다.
 설치·서비스 명령의 sudo 비밀번호는 Jetson 사용자 계정 비밀번호다.
 
+## CSV 로그 재생 — 별도 8081 포트
+
+**[http://192.168.123.101:8081](http://192.168.123.101:8081)** 또는 Jetson에서
+[http://127.0.0.1:8081](http://127.0.0.1:8081)로 접속한다.
+기존 센서 카드·항목별 그래프·로그·평균/최솟값/최댓값 화면에서 저장된 CSV를 재생한다.
+실시간 8080 서비스와 별도 프로세스로 실행하며 센서나 측정 CSV에 쓰지 않는다.
+
+최초 한 번 설치한다. **sudo를 붙이지 않는다.**
+
+```bash
+python3 /home/judgejack/working_space/biocover/scripts/install_replay.py
+```
+
+사용할 때 실행하고, 사용 후 종료한다. 부팅 자동 실행은 설정하지 않는다.
+
+```bash
+# 재생 서버 실행
+systemctl --user start biocover-replay.service
+
+# 재생 서버 종료
+systemctl --user stop biocover-replay.service
+
+# 상태 확인
+systemctl --user status biocover-replay.service --no-pager
+```
+
+화면에서 Jetson의 완료된 CSV 또는 접속한 기기의 CSV를 선택한 뒤 **재생**을 누른다.
+**일시정지 → 재개**, **정지 → 처음부터 재생**을 지원한다.
+속도는 **1~50배** 정수이며 숫자 입력·입력칸 화살표·−/+ 버튼으로 변경한다.
+그래프의 표시 범위는 재생 시각 기준이다. 재생 서버를 꺼도 실시간 측정은 계속된다.
+[CSV 형식·설치·재생 동작·제한 안내](docs/replay.md)
+
 ## 보드·센서 연결 그림
 
 ![현재 Jetson·UNO·MCP3008 센서 구성](docs/diagrams/system-overview.svg)
