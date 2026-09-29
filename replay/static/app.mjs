@@ -1,4 +1,5 @@
 import {Player} from './player.mjs';
+import {ChartPanels} from './chart.mjs';
 const basePath = new URL('../', import.meta.url).pathname.replace(/\/$/, '');
 
 const sensors = [
@@ -45,6 +46,8 @@ for (const [key,label,model,unit,color] of sensors) {
   panel.innerHTML = `<div class="chart-heading"><h3>${label} <small>${unit === 'raw' ? 'ADC raw · 보정 전' : unit}</small></h3><div class="legend"><span style="--c:${color}">${model}</span></div></div><canvas id="chart-${key}" aria-label="${label} 시계열"></canvas>`;
   $('charts').append(panel);
 }
+
+const plot = new ChartPanels(sensors,{followLabel:'재생 시점'});
 
 function error(message='') {
   $('error').textContent = message;
@@ -178,7 +181,7 @@ $('upload').onchange = () => {
   loadRecording('/api/upload',{method:'POST',body});
 };
 for (const [id,method] of [['start','replay'],['pause','pause'],['resume','resume'],['stop','stop']]) {
-  $(id).onclick = () => { player[method](); render(true); };
+  $(id).onclick = () => { player[method](); if (id==='start' || id==='stop') plot.view.follow(); render(true); };
 }
 function setSpeed(value) {
   try { player.setSpeed(value); error(); }
@@ -193,6 +196,7 @@ $('faster').onclick = () => setSpeed(Math.min(50,player.speed+1));
 $('window').onchange = () => drawAll();
 $('progress').oninput = () => {
   player.seek(Number($('progress').value) * player.duration);
+  plot.view.follow();
   render(true);
 };
 $('progress').onpointerdown = () => {
@@ -211,48 +215,8 @@ window.addEventListener('pointercancel',finishScrub);
 $('progress').onblur = finishScrub;
 
 function drawAll() {
-  const windowMs = $('window').value === 'all' ? Math.max(player.position,1000) : Number($('window').value)*1000;
-  const rows = player.visible(windowMs);
-  for (const sensor of sensors) draw(sensor,rows,windowMs);
-}
-
-function draw([key,label,model,unit,color],rows,windowMs) {
-  const canvas = $('chart-'+key), box = canvas.getBoundingClientRect();
-  const ratio = window.devicePixelRatio || 1, w = box.width, h = box.height;
-  canvas.width = Math.round(w*ratio); canvas.height = Math.round(h*ratio);
-  const ctx = canvas.getContext('2d'); ctx.scale(ratio,ratio);
-  const left=43, right=w-12, top=12, bottom=h-29;
-  const end = player.timestamp ?? Date.now(), start = end-windowMs;
-  let lo=Infinity, hi=-Infinity, count=0;
-  for (const row of rows) if (Number.isFinite(row[key])) { lo=Math.min(lo,row[key]); hi=Math.max(hi,row[key]); count++; }
-  if (!count) { lo=0; hi=1; }
-  const pad=Math.max((hi-lo)*.15,unit==='raw'?2:.2); lo-=pad; hi+=pad;
-  ctx.font='10px system-ui'; ctx.lineWidth=1;
-  for (let i=0;i<4;i++) {
-    const y=top+(bottom-top)*i/3;
-    ctx.strokeStyle='#edf1ee'; ctx.beginPath(); ctx.moveTo(left,y); ctx.lineTo(right,y); ctx.stroke();
-    ctx.fillStyle='#8a9690'; ctx.textAlign='right'; ctx.fillText(format(hi-(hi-lo)*i/3,hi-lo>20?0:1),left-8,y+3);
-  }
-  const ticks=w<420?3:4;
-  for (let i=0;i<ticks;i++) {
-    ctx.textAlign=i===0?'left':i===ticks-1?'right':'center';
-    ctx.fillText(localTime(start+windowMs*i/(ticks-1)),left+(right-left)*i/(ticks-1),h-6);
-  }
-  ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=2; ctx.beginPath();
-  let prior=null;
-  for (const row of rows) {
-    if (!Number.isFinite(row[key])) { prior=null; continue; }
-    const x=left+(row.time_ms-start)/windowMs*(right-left), y=bottom-(row[key]-lo)/(hi-lo)*(bottom-top);
-    if (prior===null || row.time_ms-prior>8500) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-    prior=row.time_ms;
-  }
-  ctx.stroke();
-  for (const row of rows) {
-    if (!Number.isFinite(row[key])) continue;
-    const x=left+(row.time_ms-start)/windowMs*(right-left), y=bottom-(row[key]-lo)/(hi-lo)*(bottom-top);
-    ctx.beginPath(); ctx.arc(x,y,2.3,0,Math.PI*2); ctx.fill();
-  }
-  if (!count) { ctx.textAlign='center'; ctx.fillStyle='#9ba69f'; ctx.font='12px system-ui'; ctx.fillText('이 구간에 측정값이 없습니다',(left+right)/2,(top+bottom)/2); }
+  plot.update({rows:player.recording?.rows || [], limit:player.cursor,
+    session:player.recording, selection:$('window').value, latest:player.timestamp ?? Date.now()});
 }
 
 window.addEventListener('resize',drawAll);

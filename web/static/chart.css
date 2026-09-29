@@ -1,0 +1,12 @@
+.chart-navigation{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:-3px 0 15px;min-height:38px}
+.chart-navigation span{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;line-height:1.7}
+.chart-navigation button{font-size:12px;padding:8px 13px;white-space:nowrap;flex-shrink:0}
+.chart-panel[data-pannable="true"]{cursor:grab;touch-action:pan-y;user-select:none}
+.chart-panel.chart-dragging{cursor:grabbing}
+.chart-surface{position:relative}
+.chart-surface canvas:focus-visible{outline:2px solid #98c9b7;outline-offset:4px;border-radius:4px}
+.chart-edge{position:absolute;top:46%;transform:translateY(-50%);font-size:11px;font-weight:600;color:#698075;background:rgba(255,255,255,.86);border:1px solid rgba(214,228,220,.85);border-radius:6px;padding:6px 8px;pointer-events:none;opacity:.8}
+.chart-edge[hidden]{display:none}
+.chart-edge-left{left:48px}
+.chart-edge-right{right:12px}
+@media(max-width:650px){.chart-navigation{align-items:flex-start;gap:8px}.chart-navigation span{font-size:11px}.chart-navigation button{min-height:40px}.chart-edge{font-size:10px;padding:5px 6px}}

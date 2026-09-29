@@ -3,7 +3,10 @@ const sensors=[['ds18','토양 온도','DS18B20','°C','#318873',2],['temperatur
 const $=id=>document.getElementById(id);let current=null,busy=false,connected=false,lastFileKey='';
 const format=(v,n=1)=>v===null||v===undefined?'—':Number(v).toFixed(n);
 const localTime=t=>new Date(t).toLocaleTimeString('ko-KR',{hour12:false});
-let history=null;
+let history=null,plot=null;
+import('/static/chart.mjs').then(({ChartPanels})=>{
+  plot=new ChartPanels(sensors,{followLabel:'최신 구간'});drawAll();
+});
 for(const [value,label] of [['3600','최근 1시간'],['7200','최근 2시간'],['all','전체']]) {
   if (![...$('window').options].some(option=>option.value===value)) $('window').add(new Option(label,value));
 }
@@ -28,8 +31,12 @@ const body=$('logs');body.replaceChildren();if(!s.rows.length){const tr=document
 async function command(action){if(busy)return;busy=true;if(current)render(current);try{render(await api('/api/'+action,'POST'));}catch(e){error(e.message);}finally{busy=false;if(current){const message=$('error').textContent;render(current);if(message)error(message);}}}
 $('start').onclick=()=>command('start');$('pause').onclick=()=>command(current?.state==='paused'?'resume':'pause');$('stop').onclick=()=>command('stop');$('window').onchange=()=>drawAll();$('files-refresh').onclick=()=>loadFiles();
 async function loadFiles(){try{const files=await api('/api/files');$('files').replaceChildren();if(!files.length){const p=document.createElement('p');p.className='empty';p.textContent='종료한 측정 세션이 여기에 표시됩니다.';$('files').append(p);}for(const file of files){const a=document.createElement('a');a.className='file';a.href='/download/'+encodeURIComponent(file.name);a.textContent='↓ '+file.name;const span=document.createElement('span');span.textContent=`${(file.bytes/1024).toFixed(1)} KB${file.name.includes('recovered')?' · 비정상 종료 복구':''}`;a.append(span);$('files').append(a);}}catch(e){$('files').textContent='저장 목록을 불러오지 못했습니다.';}}
-function draw(id,series){const canvas=$(id),box=canvas.getBoundingClientRect(),ratio=window.devicePixelRatio||1,w=box.width,h=box.height;canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);const ctx=canvas.getContext('2d');ctx.scale(ratio,ratio);const left=43,right=w-12,top=12,bottom=h-29;const end=current?.state==='running'?Date.now():current?.rows.at(-1)?Date.parse(current.rows.at(-1).timestamp):Date.now();const available=history?.rows||current?.rows||[];const windowMs=$('window').value==='all'?Math.max(1000,end-Date.parse(current?.started_at||available[0]?.timestamp||new Date(end).toISOString())):Number($('window').value)*1000,start=end-windowMs;const rows=available.filter(r=>Date.parse(r.timestamp)>=start&&Date.parse(r.timestamp)<=end);const vals=rows.flatMap(r=>series.map(([key])=>r[key])).filter(v=>Number.isFinite(v));let lo=0,hi=1;if(vals.length){lo=Infinity;hi=-Infinity;for(const value of vals){lo=Math.min(lo,value);hi=Math.max(hi,value);}}const pad=Math.max((hi-lo)*.15,series[0][0].startsWith('mq')||series[0][0]==='soil'?2:.2);lo-=pad;hi+=pad;ctx.font='10px system-ui';ctx.lineWidth=1;for(let i=0;i<4;i++){const y=top+(bottom-top)*i/3;ctx.strokeStyle='#edf1ee';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(right,y);ctx.stroke();ctx.fillStyle='#8a9690';ctx.textAlign='right';ctx.fillText(format(hi-(hi-lo)*i/3,hi-lo>20?0:1),left-8,y+3);}const ticks=w<420?3:4;for(let i=0;i<ticks;i++){ctx.textAlign=i===0?'left':i===ticks-1?'right':'center';const t=start+windowMs*i/(ticks-1);ctx.fillText(new Date(t).toLocaleTimeString('ko-KR',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}),left+(right-left)*i/(ticks-1),h-6);}for(const [key,color] of series){ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=2;ctx.beginPath();let prior=null;for(const r of rows){const t=Date.parse(r.timestamp),value=r[key];if(!Number.isFinite(value)){prior=null;continue;}const x=left+(t-start)/windowMs*(right-left),y=bottom-(value-lo)/(hi-lo)*(bottom-top);if(prior===null||t-prior>8500)ctx.moveTo(x,y);else ctx.lineTo(x,y);prior=t;}ctx.stroke();for(const r of rows){if(!Number.isFinite(r[key]))continue;const x=left+(Date.parse(r.timestamp)-start)/windowMs*(right-left),y=bottom-(r[key]-lo)/(hi-lo)*(bottom-top);ctx.beginPath();ctx.arc(x,y,2.3,0,Math.PI*2);ctx.fill();}}if(!vals.length){ctx.textAlign='center';ctx.fillStyle='#9ba69f';ctx.font='12px system-ui';ctx.fillText('새 측정값을 기다리고 있습니다',(left+right)/2,(top+bottom)/2);}}
-function drawAll(){for(const [key,label,model,unit,color] of sensors)draw('chart-'+key,[[key,color]]);}
+function drawAll(){
+  if(!plot)return;
+  const rows=history?.rows||current?.rows||[];
+  const latest=current?.state==='running'?Date.now():current?.rows.at(-1)?Date.parse(current.rows.at(-1).timestamp):Date.now();
+  plot.update({rows,session:current?.started_at,selection:$('window').value,latest});
+}
 window.addEventListener('resize',drawAll);
 async function poll(){try{await api('/api/heartbeat','POST');const s=await api('/api/state');connected=true;$('connection').textContent='● 로컬 서버 연결됨';render(s);}catch(e){connected=false;$('connection').textContent='○ 서버 연결 끊김';if(current)render(current);error('서버 연결이 끊겼습니다. 마지막 화면이며, 새 측정값이 아닙니다.');}finally{setTimeout(poll,2000);}}
 poll();loadFiles();
