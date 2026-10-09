@@ -11,7 +11,9 @@ import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'scripts'))
 from read_arduino_usb import parse_line
+from arduino_protocol import parse_event
 from show_all_sensors import read_adc
+from motor import Motor
 
 
 class Sensors:
@@ -22,8 +24,16 @@ class Sensors:
         self.thread = None
         self.latest = None
         self.error = 'UNO 응답 대기'
+        self.lifecycle = threading.Lock()
+        self.motor = Motor()
 
     def start(self):
+        with self.lifecycle:
+            self._start()
+
+    def _start(self):
+        if self.thread and self.thread.is_alive():
+            return
         result = subprocess.run(['systemctl', 'is-active', 'biocover-uno.service'],
                                 capture_output=True, text=True, timeout=3)
         if result.stdout.strip() in ('active', 'activating'):
@@ -41,6 +51,7 @@ class Sensors:
             except (OSError, ValueError) as exc:
                 with self.lock:
                     self.error = f'UNO 연결 오류: {exc}'
+                self.motor.offline(str(exc))
             self.stop_event.wait(2)
 
     def _read_connection(self):
@@ -59,11 +70,28 @@ class Sensors:
             attrs[6][termios.VMIN] = attrs[6][termios.VTIME] = 0
             termios.tcsetattr(fd, termios.TCSANOW, attrs)
             termios.tcflush(fd, termios.TCIFLUSH)
+            self.motor.online()
             buffer = b''
             last = time.monotonic()
             while not self.stop_event.is_set():
                 if time.monotonic() - last > 12:
                     raise OSError('12초 동안 새 데이터가 없습니다')
+                payload = self.motor.outgoing()
+                if payload:
+                    # At most one command, never replayed after a reconnect.
+                    deadline = time.monotonic() + 1
+                    while payload:
+                        if time.monotonic() >= deadline:
+                            raise OSError('시리얼 명령 전송 시간 초과')
+                        if not select.select([], [fd], [], .1)[1]:
+                            continue
+                        try:
+                            sent = os.write(fd, payload)
+                        except BlockingIOError:
+                            continue
+                        if not sent:
+                            raise OSError('시리얼 명령 전송 실패')
+                        payload = payload[sent:]
                 if not select.select([fd], [], [], .25)[0]:
                     continue
                 chunk = os.read(fd, 4096)
@@ -75,10 +103,20 @@ class Sensors:
                     if not line.strip():
                         continue
                     try:
-                        value = parse_line(line.decode('ascii').strip())
+                        text = line.decode('ascii').strip()
+                        event = parse_event(text)
+                        if event is not None:
+                            self.motor.feed(event)
+                            if event['kind'] == 'ready':
+                                with self.lock:
+                                    self.latest = None
+                                    self.error = 'UNO 재시작 후 새 측정 대기'
+                            continue
+                        value = parse_line(text)
                     except (ValueError, UnicodeError):
                         continue
                     if value is not None:
+                        self.motor.sensor_seen()
                         last = time.monotonic()
                         with self.lock:
                             self.latest = (value, last)
@@ -86,6 +124,7 @@ class Sensors:
                 if len(buffer) > 4096:
                     buffer = b''
         finally:
+            self.motor.offline()
             try:
                 if old is not None:
                     termios.tcsetattr(fd, termios.TCSANOW, old)
@@ -106,6 +145,11 @@ class Sensors:
                       mq3_v=None, mq4_v=None, soil_v=None, mq34_backfilled=False,
                       uno_received_at=None, uno_time_ms=None, uno_age_s=None,
                       uno_status='waiting', adc_status='ok', errors=[])
+        motor = self.motor.snapshot()
+        result.update(motor_angle=motor['angle'], motor_reported_at=motor['reported_at'],
+                      motor_status='disconnected' if not motor['connected'] else
+                      'pending' if motor['pending'] else 'error' if motor['error'] else
+                      'known' if motor['angle'] is not None else 'unset' if motor['reported_at'] else 'unknown')
         if cached:
             row, received = cached
             age = max(0, time.monotonic() - received)
@@ -133,9 +177,14 @@ class Sensors:
         return result
 
     def close(self):
+        with self.lifecycle:
+            self._close()
+
+    def _close(self):
         self.stop_event.set()
         if self.thread:
             self.thread.join(timeout=3)
             if self.thread.is_alive():
                 raise RuntimeError('UNO 읽기 스레드 종료 대기 시간 초과')
             self.thread = None
+        self.motor.offline()

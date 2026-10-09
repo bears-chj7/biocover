@@ -57,6 +57,45 @@ def create_app(engine):
     def state():
         return jsonify(engine.snapshot())
 
+    def motor_controller():
+        motor = getattr(engine.source, 'motor', None)
+        if motor is None:
+            raise RuntimeError('이 센서 소스는 모터 제어를 지원하지 않습니다.')
+        return motor
+
+    @app.get('/api/motor')
+    def motor_state():
+        try:
+            return jsonify(motor_controller().snapshot())
+        except RuntimeError as exc:
+            return jsonify(error=str(exc)), 409
+
+    @app.post('/api/motor/connect')
+    def motor_connect():
+        try:
+            motor = motor_controller()
+            engine.source.start()  # Opens USB only; does not start CSV recording.
+            return jsonify(motor.snapshot())
+        except (RuntimeError, OSError) as exc:
+            return jsonify(error=str(exc)), 409
+
+    @app.post('/api/motor/status')
+    def motor_query():
+        try:
+            return jsonify(motor_controller().request())
+        except (RuntimeError, OSError) as exc:
+            return jsonify(error=str(exc)), 409
+
+    @app.post('/api/motor')
+    def motor_command():
+        body = request.get_json(silent=True)
+        if not isinstance(body, dict) or type(body.get('angle')) is not int or not 0 <= body['angle'] <= 180:
+            return jsonify(error='angle은 0~180 사이의 정수여야 합니다.'), 400
+        try:
+            return jsonify(motor_controller().request(body['angle']))
+        except (ValueError, RuntimeError, OSError) as exc:
+            return jsonify(error=str(exc)), 409
+
     @app.get('/api/history')
     def history():
         try:

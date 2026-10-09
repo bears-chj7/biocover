@@ -23,6 +23,9 @@ HEADER = ['time_ms', 'DS18B20_C', 'DHT22_C', 'humidity_pct']
 
 
 def parse_line(text):
+    # Firmware control/status messages are not sensor samples.
+    if text.lstrip().startswith('#'):
+        return None
     fields = next(csv.reader([text]))
     if fields == HEADER:
         return None
@@ -119,7 +122,8 @@ def read_samples(port, count, timeout, output):
                     print(f'Skipping malformed line: {line[:120]!r}: {exc}', file=sys.stderr)
                     continue
                 if row is None:
-                    print('UNO CSV header received (startup/reset).', file=sys.stderr)
+                    print(line.decode('ascii').strip() if line.lstrip().startswith(b'#')
+                          else 'UNO CSV header received (startup/reset).', file=sys.stderr)
                     continue
                 print(json.dumps(row, allow_nan=False), flush=True)
                 if writer:

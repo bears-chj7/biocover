@@ -1,0 +1,10 @@
+.motor-panel{display:flex;align-items:center;justify-content:space-between;gap:20px;border:1px solid var(--line);border-radius:12px;background:#fafcfb;padding:20px 24px;margin:20px 0}
+.motor-panel h2{font-size:16px;margin:0 0 8px}
+.motor-panel p{margin:6px 0;color:var(--muted);font-size:12px;line-height:1.6}
+.motor-panel strong{font-size:22px;color:var(--ink);font-variant-numeric:tabular-nums}
+.motor-controls{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:8px}
+.motor-controls label{font-size:12px;color:var(--muted)}
+.motor-controls input{font:inherit;width:85px;padding:10px;border:1px solid #d7e1db;border-radius:8px;background:#fff;color:var(--ink)}
+.motor-controls input:focus-visible{outline:3px solid #98c9b7;outline-offset:2px}
+.motor-panel .motor-message{flex-basis:100%;text-align:right;min-height:20px;max-width:500px}
+@media(max-width:650px){.motor-panel{padding:18px 14px;flex-direction:column;align-items:stretch;gap:10px}.motor-controls{justify-content:flex-start}.motor-panel .motor-message{text-align:left}.motor-controls button{padding:10px 12px;min-height:44px}}

@@ -8,8 +8,8 @@ const sensors = [
   ['humidity','상대습도','DHT22','%','#498bad',1],
   ['mq1','메탄 · 유입','MQ-4 #1','raw','#b47c43',0],
   ['mq2','메탄 · 유출','MQ-4 #2','raw','#9168b7',0],
-  ['mq3','메탄 · #3','MQ-4 #3','raw','#c26962',0],
-  ['mq4','메탄 · #4','MQ-4 #4','raw','#3e8b9b',0],
+  ['mq3','메탄 · 유출 #3','MQ-4 #3','raw','#c26962',0],
+  ['mq4','메탄 · 유출 #4','MQ-4 #4','raw','#3e8b9b',0],
   ['soil','토양수분','CH4','raw','#7c9460',0],
 ];
 const $ = id => document.getElementById(id);
@@ -97,6 +97,10 @@ function render(force=false) {
   }
   if (force || lastCursor !== player.cursor) {
     const row = player.latest;
+    const motorNote=$('motor-replay');
+    if (motorNote) motorNote.textContent=Number.isFinite(row?.motor_angle)?
+      `모터 설정 각도: ${row.motor_angle}° · 해당 기록의 UNO 응답 · 재생 화면에서는 제어하지 않습니다.`:
+      '모터 설정 각도: 기록 없음';
     for (const [key,label,model,unit,color,n] of sensors) {
       $(`value-${key}`).textContent = format(row?.[key],n);
       $(`detail-${key}`).textContent = !row ? '재생 대기' : row[key] === null ? '이 기록은 결측값' : unit === 'raw' ? `${format(row[key+'_v'],3)} V · 보정 전` : `기록 시각 ${localTime(row.timestamp)}`;

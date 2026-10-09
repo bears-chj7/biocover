@@ -11,6 +11,7 @@ import time
 KEYS = ['ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'mq3', 'mq4', 'soil']
 FIELDS = ['timestamp', 'sequence', 'elapsed_s'] + KEYS + ['mq1_v', 'mq2_v', 'mq3_v', 'mq4_v', 'soil_v',
           'mq34_backfilled',
+          'motor_angle', 'motor_reported_at', 'motor_status',
           'uno_received_at', 'uno_time_ms', 'uno_age_s', 'uno_status', 'adc_status', 'errors']
 
 
@@ -242,4 +243,8 @@ class Engine:
         self.shutdown_event.set()
         self.wake.set()
         self.thread.join(timeout=5)
-        self.stop('웹서버 종료')
+        try:
+            self.stop('웹서버 종료')
+        finally:
+            # A manual motor connection may exist without a recording session.
+            self.source.close()

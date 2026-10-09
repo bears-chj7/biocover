@@ -48,6 +48,7 @@ class ReplayTests(unittest.TestCase):
         self.assertEqual(data['rows'][1]['ds18'], 27.5)
         self.assertEqual(data['started_at'], '2026-09-28T23:00:00+00:00')
         self.assertEqual(data['mq34_backfilled_count'], 2)
+        self.assertIsNone(data['rows'][0]['motor_angle'])
         self.assertTrue(all(row[key] == 0 for row in data['rows'] for key in ('mq3','mq4','mq3_v','mq4_v')))
         after = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in self.directory.iterdir()}
         self.assertEqual(before, after)

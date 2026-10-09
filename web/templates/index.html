@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Biocover · 센서 모니터</title><link rel="stylesheet" href="/static/style.css"><script defer src="/static/app.js"></script><script defer src="/static/frame.js"></script></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Biocover · 센서 모니터</title><link rel="stylesheet" href="/static/style.css"><script defer src="/static/app.js"></script><script defer src="/static/frame.js"></script><link rel="stylesheet" href="/static/motor.css"><script defer src="/static/motor.js"></script></head>
 <body>
 <header><a class="brand" href="/"><span class="logo">b</span>BIOCOVER <small>FIELD MONITOR</small></a><span class="connection" id="connection">연결 확인 중</span></header>
 <main>
@@ -9,6 +9,10 @@
 <div role="alert" id="error" class="alert" hidden></div>
 <div id="notice" class="notice">시작하면 CSV 기록도 함께 시작됩니다. 일시정지 중에는 기록하지 않습니다.</div>
 <section class="cards" id="cards" aria-label="센서 최신값"></section>
+<section class="motor-panel" aria-label="모터 각도 제어">
+<div><h2>모터 · SG90</h2><p>UNO 설정 각도 <strong id="motor-angle">확인 전</strong></p><p id="motor-status">USB 연결 확인 중</p><p>설정 각도는 UNO 응답이며 실제 위치 측정값은 아닙니다.</p></div>
+<form id="motor-form" class="motor-controls"><button type="button" id="motor-connect">아두이노 연결</button><button type="button" id="motor-check" disabled>상태 확인</button><label for="motor-target">목표 각도</label><input id="motor-target" type="number" min="0" max="180" step="1" placeholder="0~180" required inputmode="numeric"><span>°</span><button type="submit" id="motor-send" class="primary" disabled>각도 전송</button><p id="motor-message" class="motor-message" role="status">각도를 입력하고 전송을 눌러야 모터 명령이 전달됩니다.</p></form>
+</section>
 <section class="section-title"><div><h2>변화 추이</h2><p>오래된 값은 표시 범위 밖으로 이동합니다. 결측 구간은 선으로 연결하지 않습니다.</p></div><label>표시 범위 <select id="window"><option value="300">최근 5분</option><option value="600">최근 10분</option><option value="1800">최근 30분</option><option value="3600">최근 1시간</option><option value="7200">최근 2시간</option><option value="all">전체</option></select></label></section>
 <section class="charts" id="charts" aria-label="측정 항목별 시계열 그래프"></section>
 <div class="unconnected"><strong>미연결</strong><span>CM1106 CO₂</span><p>MQ-4 ppm과 토양수분 %는 보정 후 제공할 수 있습니다.</p></div>

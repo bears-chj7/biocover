@@ -1,5 +1,8 @@
 # UNO USB 온도·습도 수신
 
+**2026-10-09 갱신:** 센서 4열 CSV와 `#READY`, `#ANGLE`, `#STATUS`, `#ERR`를 구분해 처리한다.
+UNO D9 모터 제어와 새 스케치는 [모터 프로토콜 문서](motor-control.md)를 참고한다.
+
 [UNO 배선 그림 및 전체 하드웨어 핀맵](hardware-guide.md)
 
 **최신 저장 정책:** 기본은 화면 출력, 파일 저장은 사용자가 요청할 때만 한다.
@@ -24,8 +27,8 @@
 
 - UART 출력 9600bps, 8N1, 약 2초 주기.
 - 헤더: `time_ms,DS18B20_C,DHT22_C,humidity_pct`.
-- `time_ms`는 UNO 루프 시작 시점의 부팅 후 밀리초다. 실제 측정 완료 시각이나
-  UTC가 아니며, UNO 리셋 및 millis 래핑 시 감소할 수 있다.
+- 현재 스케치의 `time_ms`는 DS18 변환 완료를 확인하고 출력 함수를 호출한 루프 시점의 부팅 후 밀리초다.
+  UTC가 아니며 UNO 리셋 및 millis 래핑 시 감소할 수 있다.
 - Jetson 수신기는 `received_at_utc`를 별도로 저장한다.
 - NaN/무한대/범위 밖 값은 JSON null, CSV 빈칸과 invalid_fields로 보존한다.
   범위 내 값도 교정 또는 정확도를 검증한 것은 아니다.

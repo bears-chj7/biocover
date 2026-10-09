@@ -1,7 +1,7 @@
 const footerNote=document.querySelector('footer span');if(footerNote)footerNote.textContent='화면을 닫아도 측정은 계속됩니다. 종료하려면 정지 버튼을 누르세요.';
 const sensors=[['ds18','토양 온도','DS18B20','°C','#318873',2],['temperature','공기 온도','DHT22','°C','#617bc4',1],['humidity','상대습도','DHT22','%','#498bad',1],['mq1','메탄 · 유입','MQ-4 #1','raw','#b47c43',0],['mq2','메탄 · 유출','MQ-4 #2','raw','#9168b7',0],
-  ['mq3','메탄 · #3','MQ-4 #3','raw','#c26962',0],
-  ['mq4','메탄 · #4','MQ-4 #4','raw','#3e8b9b',0],['soil','토양수분','CH4','raw','#7c9460',0]];
+  ['mq3','메탄 · 유출 #3','MQ-4 #3','raw','#c26962',0],
+  ['mq4','메탄 · 유출 #4','MQ-4 #4','raw','#3e8b9b',0],['soil','토양수분','CH4','raw','#7c9460',0]];
 const $=id=>document.getElementById(id);let current=null,busy=false,connected=false,lastFileKey='';
 const format=(v,n=1)=>v===null||v===undefined?'—':Number(v).toFixed(n);
 const localTime=t=>new Date(t).toLocaleTimeString('ko-KR',{hour12:false});

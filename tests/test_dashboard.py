@@ -22,6 +22,7 @@ class Fake:
         return dict(ds18=27.1, temperature=27.5, humidity=57., mq1=201, mq2=103,
                     mq3=714, mq4=527, soil=824, mq1_v=.648, mq2_v=.332,
                     mq3_v=2.303, mq4_v=1.7, soil_v=2.658,
+                    motor_angle=30, motor_reported_at='2026-10-09T14:00:00+00:00', motor_status='known',
                     uno_status='ok', adc_status='ok', errors=[])
 
 
@@ -60,6 +61,8 @@ class DashboardTests(unittest.TestCase):
         replay = self.client.get('/replay/api/recording/' + path.name).json
         self.assertEqual(replay['rows'][-1]['mq3_v'], 2.303)
         self.assertEqual(replay['mq34_backfilled_count'], 0)
+        self.assertEqual(replay['rows'][-1]['motor_angle'], 30)
+        self.assertEqual(rows[-1]['motor_status'], 'known')
         with self.client.get('/download/'+path.name) as response:
             self.assertEqual(response.status_code, 200)
         self.assertEqual(self.client.get('/download/no.csv').status_code, 404)
@@ -67,6 +70,28 @@ class DashboardTests(unittest.TestCase):
     def test_origin_guard(self):
         self.assertEqual(self.client.post('/api/start').status_code, 415)
         self.assertEqual(self.client.post('/api/start', json={}, headers={'Origin':'https://bad.example'}).status_code, 403)
+
+    def test_motor_api_validates_before_writing_and_replay_has_no_controls(self):
+        from unittest.mock import Mock
+        self.engine.source.motor = Mock()
+        self.engine.source.motor.snapshot.return_value = dict(connected=True, angle=None)
+        self.engine.source.motor.request.return_value = dict(connected=True, angle=30)
+        for angle in (-1, 181, 30.5, True, '30', None):
+            self.assertEqual(self.client.post('/api/motor', json={'angle': angle}).status_code, 400)
+        self.engine.source.motor.request.assert_not_called()
+        self.assertEqual(self.client.post('/api/motor', json={'angle': 30}).json['angle'], 30)
+        self.engine.source.motor.request.assert_called_once_with(30)
+        self.assertEqual(self.client.post('/api/motor', json={'angle': 30}, headers={'Origin': 'http://other.example'}).status_code, 403)
+        self.assertEqual(self.client.post('/replay/api/motor', json={'angle': 30}).status_code, 404)
+        self.assertEqual(self.client.post('/api/motor/connect', json={}).status_code, 200)
+        self.assertEqual(self.engine.state, 'idle')
+        self.assertEqual(list(Path(self.tmp.name).glob('*.csv')), [])
+
+    def test_close_releases_manual_serial_connection_even_without_measurement(self):
+        from unittest.mock import Mock
+        self.engine.source.close = Mock()
+        self.engine.close()
+        self.engine.source.close.assert_called_once()
 
     def test_history_reads_older_csv_rows_without_changing_session(self):
         from unittest.mock import patch

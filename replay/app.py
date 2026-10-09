@@ -17,7 +17,7 @@ from werkzeug.serving import make_server
 ROOT = Path(__file__).resolve().parents[1]
 LEGACY_KEYS = ('ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'soil')
 KEYS = ('ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'mq3', 'mq4', 'soil')
-EXTRA_NUMBERS = ('mq1_v', 'mq2_v', 'mq3_v', 'mq4_v', 'soil_v', 'uno_age_s')
+EXTRA_NUMBERS = ('mq1_v', 'mq2_v', 'mq3_v', 'mq4_v', 'soil_v', 'uno_age_s', 'motor_angle')
 NEW_NUMBERS = ('mq3', 'mq4', 'mq3_v', 'mq4_v')
 MAX_BYTES = 20 * 1024 * 1024
 MAX_ROWS = 100_000
@@ -74,6 +74,8 @@ def parse_csv(raw, name):
             row[key] = number if number is not None and math.isfinite(number) else None
         row['uno_status'] = source.get('uno_status', '')
         row['adc_status'] = source.get('adc_status', '')
+        row['motor_reported_at'] = source.get('motor_reported_at', '')
+        row['motor_status'] = source.get('motor_status', 'unknown')
         row['mq34_backfilled'] = (any(key not in source for key in ('mq3', 'mq4'))
                                   or source.get('mq34_backfilled', '').strip().lower() in ('1', 'true'))
         rows.append(row)

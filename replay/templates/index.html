@@ -23,6 +23,7 @@
   <div class="playback-progress"><input id="progress" type="range" min="0" max="1" step="0.001" value="0" aria-label="재생 타임라인" disabled><div class="cadence"><span class="pulse" id="pulse"></span><span id="refresh">원본 시각 기준</span><span class="divider"></span><span id="samples">0 / 0행</span><span id="elapsed">00:00 / 00:00</span></div></div>
   <div role="alert" id="error" class="alert" hidden></div>
   <div id="notice" class="notice" role="status">완료된 CSV를 선택한 후 재생을 누르세요. 원본 파일은 변경되지 않습니다.</div>
+  <p class="notice" id="motor-replay">모터 설정 각도: 기록 없음</p>
   <section class="cards" id="cards" aria-label="재생 시점 센서값"></section>
   <section class="section-title"><div><h2>변화 추이</h2><p>재생 시각 기준으로 오래된 값은 표시 범위 밖으로 이동합니다. 결측 구간은 선으로 연결하지 않습니다.</p></div><label>표시 범위 <select id="window"><option value="300">최근 5분</option><option value="600">최근 10분</option><option value="1800">최근 30분</option><option value="3600">최근 1시간</option><option value="7200">최근 2시간</option><option value="all">전체</option></select></label></section>
   <section class="charts" id="charts" aria-label="측정 항목별 시계열 그래프"></section>
