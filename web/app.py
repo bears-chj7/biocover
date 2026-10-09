@@ -92,8 +92,36 @@ def create_app(engine):
         if not isinstance(body, dict) or type(body.get('angle')) is not int or not 0 <= body['angle'] <= 180:
             return jsonify(error='angle은 0~180 사이의 정수여야 합니다.'), 400
         try:
+            engine.mixer.disable('수동 각도 명령으로 자동 교반을 중단했습니다.')
             return jsonify(motor_controller().request(body['angle']))
         except (ValueError, RuntimeError, OSError) as exc:
+            return jsonify(error=str(exc)), 409
+
+    @app.get('/api/mixer')
+    def mixer_state():
+        return jsonify(engine.mixer.snapshot())
+
+    @app.post('/api/mixer/<action>')
+    def mixer_control(action):
+        body = request.get_json(silent=True)
+        if not isinstance(body, dict):
+            return jsonify(error='JSON 객체가 필요합니다.'), 400
+        try:
+            # Serialize enabling against measurement pause/stop.
+            with engine.lock:
+                if action == 'enable':
+                    if engine.state != 'running':
+                        raise ValueError('센서 측정을 시작한 뒤 자동 교반을 켜세요.')
+                    result = engine.mixer.enable()
+                elif action == 'disable':
+                    engine.mixer.disable()
+                    result = engine.mixer.snapshot()
+                elif action == 'settings':
+                    result = engine.mixer.configure(body)
+                else:
+                    return jsonify(error='알 수 없는 자동 교반 동작'), 404
+            return jsonify(result)
+        except (ValueError, RuntimeError) as exc:
             return jsonify(error=str(exc)), 409
 
     @app.get('/api/history')

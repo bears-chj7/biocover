@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import threading
 import time
+from mixer import Mixer
 
 KEYS = ['ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'mq3', 'mq4', 'soil']
 FIELDS = ['timestamp', 'sequence', 'elapsed_s'] + KEYS + ['mq1_v', 'mq2_v', 'mq3_v', 'mq4_v', 'soil_v',
@@ -33,6 +34,7 @@ class Engine:
         self.started_at = None
         self.directory.mkdir(parents=True, exist_ok=True)
         self.recovered = self.recover()
+        self.mixer = Mixer(getattr(source, 'motor', None), interval)
         self.thread = threading.Thread(target=self._run, daemon=True)
         self.thread.start()
 
@@ -77,6 +79,7 @@ class Engine:
         with self.lock:
             if self.state in ('running', 'paused'):
                 raise ValueError('이미 진행 중인 측정입니다.')
+            self.mixer.disable('새 측정 시작 · 자동 교반은 별도로 켜세요.')
             self.source.start()
             try:
                 stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S.%fZ')
@@ -107,6 +110,7 @@ class Engine:
         with self.lock:
             if self.state != 'running':
                 raise ValueError('측정 중에만 일시정지할 수 있습니다.')
+            self.mixer.disable('측정 일시정지')
             self.state = 'paused'
 
     def resume(self):
@@ -119,6 +123,7 @@ class Engine:
 
     def stop(self, reason='사용자 정지'):
         with self.lock:
+            self.mixer.disable(reason)
             if self.state not in ('running', 'paused', 'error'):
                 return
             self.state = 'stopped'
@@ -169,6 +174,9 @@ class Engine:
                     stat['sum'] += value
                     stat['min'] = value if stat['min'] is None else min(value, stat['min'])
                     stat['max'] = value if stat['max'] is None else max(value, stat['max'])
+            # Decisions use a fresh, successfully persisted live sample only.
+            # Motor ACKs and dwell intervals are processed on the mixer's thread.
+            self.mixer.observe(sample)
 
     def _run(self):
         while not self.shutdown_event.is_set():
@@ -184,6 +192,7 @@ class Engine:
                 with self.lock:
                     self.error = f'측정/저장 중단: {exc}'
                     self.state = 'error'
+                    self.mixer.disable('측정/저장 오류')
                     try:
                         self.source.close()
                     except Exception:
@@ -240,6 +249,7 @@ class Engine:
         return dict(session=session, rows=rows, through=through, total=count)
 
     def close(self):
+        self.mixer.close()
         self.shutdown_event.set()
         self.wake.set()
         self.thread.join(timeout=5)

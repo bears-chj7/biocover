@@ -15,6 +15,7 @@ class Motor:
         self.pending = None
         self.probe = False
         self.probed = False
+        self.generation = 0
 
     def _finish(self, error=''):
         if self.pending:
@@ -24,6 +25,7 @@ class Motor:
 
     def online(self):
         with self.lock:
+            self.generation += 1
             self.connected = True
             self.supported = self.probed = self.probe = False
             self.angle = self.reported_at = None
@@ -31,6 +33,7 @@ class Motor:
 
     def offline(self, reason='USB 연결 종료'):
         with self.lock:
+            self.generation += 1
             self.connected = self.supported = False
             self.angle = self.reported_at = None
             self.error = reason
@@ -46,6 +49,7 @@ class Motor:
         with self.lock:
             kind = event['kind']
             if kind == 'ready':
+                self.generation += 1
                 self.angle = self.reported_at = None
                 self.supported = True
                 self.probed = self.probe = False
@@ -76,9 +80,12 @@ class Motor:
                 return b'STATUS\n'
         return None
 
-    def request(self, angle=None, timeout=3):
+    def submit(self, angle=None, generation=None):
+        """Queue once without waiting, so automated motion cannot block sampling."""
         payload = b'STATUS\n' if angle is None else angle_command(angle)
         with self.lock:
+            if generation is not None and generation != self.generation:
+                raise RuntimeError('UNO 연결이 바뀌어 자동 명령을 취소했습니다.')
             if not self.connected:
                 raise RuntimeError('먼저 아두이노를 연결하세요.')
             if angle is not None and not self.supported:
@@ -88,6 +95,16 @@ class Motor:
             pending = dict(payload=payload, angle=angle, sent=False, done=threading.Event(), error='')
             self.pending = pending
             self.error = ''
+        return pending
+
+    def cancel(self, pending, reason):
+        with self.lock:
+            if self.pending is pending:
+                self.error = reason
+                self._finish(reason)
+
+    def request(self, angle=None, timeout=3):
+        pending = self.submit(angle)
         pending['done'].wait(timeout)
         with self.lock:
             if self.pending is pending:
@@ -102,4 +119,5 @@ class Motor:
         with self.lock:
             return dict(connected=self.connected, supported=self.supported, angle=self.angle,
                         reported_at=self.reported_at, pending=self.pending is not None,
-                        target=self.pending['angle'] if self.pending else None, error=self.error)
+                        target=self.pending['angle'] if self.pending else None, error=self.error,
+                        generation=self.generation)
