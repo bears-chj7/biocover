@@ -121,3 +121,17 @@ test('1 hour, 2 hour and whole-session windows include the intended records',()=
   assert.equal(p.visible(7200000).length,1441);
   assert.equal(p.visible(Infinity).length,2000);
 });
+
+test('MQ #3/#4 aggregate separately, include legacy zeros and skip actual missing readings',()=>{
+  const p=new Player(()=>0);
+  p.load({rows:[
+    {time_ms:0,mq3:0,mq4:0,mq34_backfilled:true},
+    {time_ms:5000,mq3:714,mq4:526},
+    {time_ms:10000,mq3:null,mq4:null}
+  ]});
+  p.seek(10000);
+  assert.equal(p.stats.mq3.count,2);assert.equal(p.stats.mq3.mean,357);
+  assert.equal(p.stats.mq4.count,2);assert.equal(p.stats.mq4.mean,263);
+  p.seek(0);
+  assert.equal(p.stats.mq3.mean,0);assert.equal(p.stats.mq4.mean,0);
+});

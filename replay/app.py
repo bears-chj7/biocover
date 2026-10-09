@@ -15,8 +15,10 @@ from flask import Flask, Request, jsonify, render_template, request
 from werkzeug.serving import make_server
 
 ROOT = Path(__file__).resolve().parents[1]
-KEYS = ('ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'soil')
-EXTRA_NUMBERS = ('mq1_v', 'mq2_v', 'soil_v', 'uno_age_s')
+LEGACY_KEYS = ('ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'soil')
+KEYS = ('ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'mq3', 'mq4', 'soil')
+EXTRA_NUMBERS = ('mq1_v', 'mq2_v', 'mq3_v', 'mq4_v', 'soil_v', 'uno_age_s')
+NEW_NUMBERS = ('mq3', 'mq4', 'mq3_v', 'mq4_v')
 MAX_BYTES = 20 * 1024 * 1024
 MAX_ROWS = 100_000
 
@@ -35,9 +37,9 @@ def parse_csv(raw, name):
     except UnicodeDecodeError as exc:
         raise ValueError('UTF-8 CSV 파일을 선택하세요.') from exc
     reader = csv.DictReader(io.StringIO(text, newline=''), strict=True)
-    required = {'timestamp', *KEYS}
+    required = {'timestamp', *LEGACY_KEYS}
     if not reader.fieldnames or not required.issubset(reader.fieldnames):
-        raise ValueError('웹 측정 CSV가 필요합니다. 필수 열: timestamp, ' + ', '.join(KEYS))
+        raise ValueError('웹 측정 CSV가 필요합니다. 필수 열: timestamp, ' + ', '.join(LEGACY_KEYS))
     if len(reader.fieldnames) != len(set(reader.fieldnames)):
         raise ValueError('CSV 열 이름이 중복되어 있습니다.')
     rows = []
@@ -62,7 +64,9 @@ def parse_csv(raw, name):
         row = {'timestamp': instant.isoformat(), 'time_ms': time_ms,
                'errors': [s.strip() for s in source.get('errors', '').split(';') if s.strip()]}
         for key in (*KEYS, *EXTRA_NUMBERS):
-            value = source.get(key, '').strip()
+            # A missing legacy column is the requested zero placeholder.
+            # Empty/NaN readings in a new four-sensor CSV remain missing values.
+            value = source.get(key, '0' if key in NEW_NUMBERS else '').strip()
             try:
                 number = None if value.lower() in ('', 'nan', 'null', 'none', 'na', 'n/a') else float(value)
             except ValueError as exc:
@@ -70,10 +74,13 @@ def parse_csv(raw, name):
             row[key] = number if number is not None and math.isfinite(number) else None
         row['uno_status'] = source.get('uno_status', '')
         row['adc_status'] = source.get('adc_status', '')
+        row['mq34_backfilled'] = (any(key not in source for key in ('mq3', 'mq4'))
+                                  or source.get('mq34_backfilled', '').strip().lower() in ('1', 'true'))
         rows.append(row)
     if not rows:
         raise ValueError('측정 행이 없는 CSV입니다.')
     return {'name': name, 'rows': rows, 'count': len(rows),
+            'mq34_backfilled_count': sum(row['mq34_backfilled'] for row in rows),
             'started_at': rows[0]['timestamp'], 'ended_at': rows[-1]['timestamp'],
             'duration_ms': rows[-1]['time_ms'] - rows[0]['time_ms']}
 

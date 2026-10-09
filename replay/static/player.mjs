@@ -1,5 +1,5 @@
 // A monotonic per-tab playback clock. It has no sensor, file-write or network access.
-export const KEYS = ['ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'soil'];
+export const KEYS = ['ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'mq3', 'mq4', 'soil'];
 
 export class Player {
   constructor(now = () => performance.now()) {

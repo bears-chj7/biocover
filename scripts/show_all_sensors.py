@@ -22,7 +22,8 @@ def read_adc():
         saved = True
         fcntl.ioctl(fd, 0x40016b01, bytes([0]))
         result = {}
-        for channel, name in ((0, 'MQ4_1'), (1, 'MQ4_2'), (4, 'soil_moisture')):
+        for channel, name in ((0, 'MQ4_1'), (1, 'MQ4_2'), (2, 'MQ4_3'),
+                              (3, 'MQ4_4'), (4, 'soil_moisture')):
             tx = (C.c_ubyte * 3)(1, (8 + channel) << 4, 0)
             rx = (C.c_ubyte * 3)()
             message = struct.pack('=QQIIHBBBBBB', C.addressof(tx), C.addressof(rx),
@@ -57,7 +58,7 @@ def main():
     if state.stdout.strip() not in ('inactive', 'failed', 'unknown'):
         raise SystemExit('Could not confirm logger stopped; run with --disable-autosave.')
     print('화면 출력 전용. MQ-4 ppm 및 토양수분 %는 보정 전이라 계산하지 않습니다.', flush=True)
-    print('MQ-4 #3/#4, CM1106: 미연결', flush=True)
+    print('MQ-4 #1~#4: CH0~CH3 · 토양수분: CH4 · CM1106: 미연결', flush=True)
     reader = Path(__file__).with_name('read_arduino_usb.py')
     process = subprocess.Popen([sys.executable, str(reader), '--port', '/dev/biocover-uno',
                                 '--samples', str(args.samples)], stdout=subprocess.PIPE, text=True)

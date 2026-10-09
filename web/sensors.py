@@ -102,7 +102,8 @@ class Sensors:
         with self.lock:
             cached, error = self.latest, self.error
         result = dict(ds18=None, temperature=None, humidity=None, mq1=None, mq2=None,
-                      soil=None, mq1_v=None, mq2_v=None, soil_v=None,
+                      mq3=None, mq4=None, soil=None, mq1_v=None, mq2_v=None,
+                      mq3_v=None, mq4_v=None, soil_v=None, mq34_backfilled=False,
                       uno_received_at=None, uno_time_ms=None, uno_age_s=None,
                       uno_status='waiting', adc_status='ok', errors=[])
         if cached:
@@ -122,7 +123,8 @@ class Sensors:
             result['errors'].append(error or 'UNO 응답 대기')
         try:
             adc = read_adc()
-            for key, name in [('mq1','MQ4_1'), ('mq2','MQ4_2'), ('soil','soil_moisture')]:
+            for key, name in [('mq1','MQ4_1'), ('mq2','MQ4_2'), ('mq3','MQ4_3'),
+                              ('mq4','MQ4_4'), ('soil','soil_moisture')]:
                 result[key] = adc[name]['raw']
                 result[key + '_v'] = adc[name]['voltage_V_nominal']
         except (OSError, ValueError) as exc:

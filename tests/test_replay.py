@@ -47,6 +47,8 @@ class ReplayTests(unittest.TestCase):
         self.assertEqual(data['rows'][0]['errors'], ['UNO 대기'])
         self.assertEqual(data['rows'][1]['ds18'], 27.5)
         self.assertEqual(data['started_at'], '2026-09-28T23:00:00+00:00')
+        self.assertEqual(data['mq34_backfilled_count'], 2)
+        self.assertTrue(all(row[key] == 0 for row in data['rows'] for key in ('mq3','mq4','mq3_v','mq4_v')))
         after = {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in self.directory.iterdir()}
         self.assertEqual(before, after)
 
@@ -114,6 +116,19 @@ class ReplayTests(unittest.TestCase):
         self.assertEqual(data['rows'][0]['time_ms'], data['rows'][1]['time_ms'])
         for key in ('ds18', 'temperature', 'humidity'):
             self.assertIsNone(data['rows'][0][key])
+
+    def test_four_sensor_values_blanks_and_zero_provenance(self):
+        raw = (b'timestamp,ds18,temperature,humidity,mq1,mq2,soil,mq3,mq4,mq3_v,mq4_v,mq34_backfilled\n'
+               b'2026-10-09T13:00:00Z,27,28,55,200,100,800,0,0,0,0,1\n'
+               b'2026-10-09T13:00:05Z,27,28,55,200,100,800,714,527,2.303,1.7,0\n'
+               b'2026-10-09T13:00:10Z,27,28,55,200,100,800,,NaN,,,0\n')
+        data = parse_csv(raw, 'four.csv')
+        self.assertEqual(data['mq34_backfilled_count'], 1)
+        self.assertEqual(data['rows'][1]['mq3'], 714)
+        self.assertEqual(data['rows'][1]['mq4_v'], 1.7)
+        self.assertIsNone(data['rows'][2]['mq3'])
+        self.assertIsNone(data['rows'][2]['mq4'])
+        self.assertFalse(data['rows'][2]['mq34_backfilled'])
 
 
 if __name__ == '__main__':

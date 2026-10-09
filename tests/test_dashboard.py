@@ -20,7 +20,8 @@ class Fake:
     def close(self): pass
     def sample(self):
         return dict(ds18=27.1, temperature=27.5, humidity=57., mq1=201, mq2=103,
-                    soil=824, mq1_v=.648, mq2_v=.332, soil_v=2.658,
+                    mq3=714, mq4=527, soil=824, mq1_v=.648, mq2_v=.332,
+                    mq3_v=2.303, mq4_v=1.7, soil_v=2.658,
                     uno_status='ok', adc_status='ok', errors=[])
 
 
@@ -52,6 +53,13 @@ class DashboardTests(unittest.TestCase):
             rows = list(csv.DictReader(f))
         self.assertEqual(len(rows), snapshot['count'])
         self.assertEqual(snapshot['stats']['mq1']['mean'], 201)
+        self.assertEqual(snapshot['stats']['mq3']['mean'], 714)
+        self.assertEqual(snapshot['stats']['mq4']['max'], 527)
+        self.assertTrue(all(row['mq3'] == '714' and row['mq4'] == '527' for row in rows))
+        self.assertTrue(all(row['mq34_backfilled'] == '0' for row in rows))
+        replay = self.client.get('/replay/api/recording/' + path.name).json
+        self.assertEqual(replay['rows'][-1]['mq3_v'], 2.303)
+        self.assertEqual(replay['mq34_backfilled_count'], 0)
         with self.client.get('/download/'+path.name) as response:
             self.assertEqual(response.status_code, 200)
         self.assertEqual(self.client.get('/download/no.csv').status_code, 404)
@@ -73,6 +81,8 @@ class DashboardTests(unittest.TestCase):
         second = self.client.get('/api/history?after=1000').json
         self.assertEqual(len(first['rows']), 1000)
         self.assertEqual(first['rows'][0]['sequence'], 1)
+        self.assertEqual(first['rows'][0]['mq3'], 714)
+        self.assertEqual(first['rows'][0]['mq4'], 527)
         self.assertEqual(len(first['rows']) + len(second['rows']), count)
         self.assertEqual(second['through'], count)
         self.assertEqual(self.engine.state, 'paused')
@@ -167,6 +177,20 @@ class DashboardTests(unittest.TestCase):
         self.assertIsNone(row['ds18'])
         self.assertEqual(row['uno_status'], 'stale')
         self.assertEqual(row['adc_status'], 'error')
+        self.assertIsNone(row['mq3'])
+        self.assertIsNone(row['mq4'])
+
+    def test_adc_four_channel_mapping(self):
+        from unittest.mock import patch
+        values = [('MQ4_1', 201), ('MQ4_2', 103), ('MQ4_3', 714), ('MQ4_4', 527), ('soil_moisture', 824)]
+        adc = {key: {'raw': raw, 'voltage_V_nominal': raw * 3.3 / 1023} for key, raw in values}
+        with patch('sensors.read_adc', return_value=adc):
+            row = Sensors().sample()
+        for key, (_, raw) in zip(('mq1', 'mq2', 'mq3', 'mq4', 'soil'), values):
+            self.assertEqual(row[key], raw)
+            self.assertAlmostEqual(row[key + '_v'], raw * 3.3 / 1023)
+        self.assertEqual(row['adc_status'], 'ok')
+        self.assertFalse(row['mq34_backfilled'])
     def test_killed_process_recovery(self):
         code='''import sys,time
 sys.path.insert(0,sys.argv[1])

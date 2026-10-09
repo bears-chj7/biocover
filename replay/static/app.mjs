@@ -8,6 +8,8 @@ const sensors = [
   ['humidity','상대습도','DHT22','%','#498bad',1],
   ['mq1','메탄 · 유입','MQ-4 #1','raw','#b47c43',0],
   ['mq2','메탄 · 유출','MQ-4 #2','raw','#9168b7',0],
+  ['mq3','메탄 · #3','MQ-4 #3','raw','#c26962',0],
+  ['mq4','메탄 · #4','MQ-4 #4','raw','#3e8b9b',0],
   ['soil','토양수분','CH4','raw','#7c9460',0],
 ];
 const $ = id => document.getElementById(id);
@@ -91,12 +93,14 @@ function render(force=false) {
   if (player.recording) {
     const note = {ready:'재생을 누르면 첫 기록부터 시작합니다.',running:'CSV의 원래 기록 간격을 배속에 맞춰 재생합니다.',paused:'현재 시점에서 멈췄습니다. 재개하면 이어집니다.',stopped:'처음 위치로 돌아왔습니다. 재생하면 다시 시작합니다.',ended:'마지막 기록까지 재생했습니다. 처음부터 다시 재생할 수 있습니다.'};
     $('notice').textContent = `${player.recording.name} · ${note[player.state]}`;
+    if (player.recording.mq34_backfilled_count) $('notice').textContent += ` · 이전 2채널 기록 ${player.recording.mq34_backfilled_count.toLocaleString()}행의 MQ #3·#4는 0으로 채운 값입니다.`;
   }
   if (force || lastCursor !== player.cursor) {
     const row = player.latest;
     for (const [key,label,model,unit,color,n] of sensors) {
       $(`value-${key}`).textContent = format(row?.[key],n);
       $(`detail-${key}`).textContent = !row ? '재생 대기' : row[key] === null ? '이 기록은 결측값' : unit === 'raw' ? `${format(row[key+'_v'],3)} V · 보정 전` : `기록 시각 ${localTime(row.timestamp)}`;
+      if (row?.mq34_backfilled && ['mq3','mq4'].includes(key)) $(`detail-${key}`).textContent = '이전 기록 · 0으로 채움';
       for (const stat of ['mean','min','max']) $(`${stat}-${key}`).textContent = format(player.stats[key][stat],n);
     }
     renderLogs();
@@ -111,7 +115,7 @@ function renderLogs() {
   if (!player.cursor) {
     const tr = document.createElement('tr');
     const td = document.createElement('td');
-    td.colSpan = 8; td.className = 'empty'; td.textContent = '아직 재생한 기록이 없습니다.';
+    td.colSpan = sensors.length+2; td.className = 'empty'; td.textContent = '아직 재생한 기록이 없습니다.';
     tr.append(td); body.append(tr);
   }
   const fragment = document.createDocumentFragment();
@@ -120,11 +124,12 @@ function renderLogs() {
     const valid = sensors.every(([key]) => Number.isFinite(row[key]));
     const statusOK = ['uno_status','adc_status'].every(key => !row[key] || row[key] === 'ok');
     const ok = valid && statusOK && !row.errors.length;
-    const values = [localTime(row.timestamp),...sensors.map(([key,a,b,c,d,n])=>format(row[key],n)),ok?'정상':'결측/오류'];
+    const status = (ok?'정상':'결측/오류') + (row.mq34_backfilled?' · #3·#4 0 채움':'');
+    const values = [localTime(row.timestamp),...sensors.map(([key,a,b,c,d,n])=>format(row[key],n)),status];
     values.forEach((value,index) => {
       const td = document.createElement('td'); td.textContent = value;
       if (index === 0) td.title = new Date(row.timestamp).toLocaleString('ko-KR');
-      if (index === 7) { td.className = ok ? 'ok' : 'warn'; td.title = row.errors.join(' / '); }
+      if (index === sensors.length+1) { td.className = ok ? 'ok' : 'warn'; td.title = row.errors.join(' / '); }
       tr.append(td);
     });
     fragment.append(tr);

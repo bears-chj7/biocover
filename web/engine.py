@@ -8,8 +8,9 @@ from pathlib import Path
 import threading
 import time
 
-KEYS = ['ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'soil']
-FIELDS = ['timestamp', 'sequence', 'elapsed_s'] + KEYS + ['mq1_v', 'mq2_v', 'soil_v',
+KEYS = ['ds18', 'temperature', 'humidity', 'mq1', 'mq2', 'mq3', 'mq4', 'soil']
+FIELDS = ['timestamp', 'sequence', 'elapsed_s'] + KEYS + ['mq1_v', 'mq2_v', 'mq3_v', 'mq4_v', 'soil_v',
+          'mq34_backfilled',
           'uno_received_at', 'uno_time_ms', 'uno_age_s', 'uno_status', 'adc_status', 'errors']
 
 
@@ -152,6 +153,7 @@ class Engine:
                 if value is not None and (not isinstance(value, (int, float)) or not math.isfinite(value)):
                     sample[key] = None
             csvrow = {k: sample.get(k) for k in FIELDS}
+            csvrow['mq34_backfilled'] = int(bool(sample.get('mq34_backfilled', False)))
             csvrow['errors'] = '; '.join(sample.get('errors', []))
             self.writer.writerow(csvrow)
             self.file.flush()
@@ -226,7 +228,7 @@ class Engine:
                 row = dict(timestamp=source['timestamp'], sequence=int(source['sequence']))
                 for key in KEYS:
                     try:
-                        value = float(source[key])
+                        value = float(source.get(key, '0' if key in ('mq3', 'mq4') else ''))
                     except (ValueError, TypeError):
                         value = None
                     row[key] = value if value is not None and math.isfinite(value) else None
