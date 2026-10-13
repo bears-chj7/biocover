@@ -92,7 +92,9 @@ def create_app(engine):
         if not isinstance(body, dict) or type(body.get('angle')) is not int or not 0 <= body['angle'] <= 180:
             return jsonify(error='angle은 0~180 사이의 정수여야 합니다.'), 400
         try:
+            engine.mixer_resume_pending = False
             engine.mixer.disable('수동 각도 명령으로 자동 교반을 중단했습니다.')
+            engine.checkpoint()
             return jsonify(motor_controller().request(body['angle']))
         except (ValueError, RuntimeError, OSError) as exc:
             return jsonify(error=str(exc)), 409
@@ -112,14 +114,17 @@ def create_app(engine):
                 if action == 'enable':
                     if engine.state != 'running':
                         raise ValueError('센서 측정을 시작한 뒤 자동 교반을 켜세요.')
-                    result = engine.mixer.enable()
+                    result = engine.mixer.enable(history=engine.rows)
+                    engine.mixer_resume_pending = False
                 elif action == 'disable':
+                    engine.mixer_resume_pending = False
                     engine.mixer.disable()
                     result = engine.mixer.snapshot()
                 elif action == 'settings':
                     result = engine.mixer.configure(body)
                 else:
                     return jsonify(error='알 수 없는 자동 교반 동작'), 404
+                engine.checkpoint()
             return jsonify(result)
         except (ValueError, RuntimeError) as exc:
             return jsonify(error=str(exc)), 409
@@ -182,7 +187,7 @@ def main():
     def terminate(signum, frame):
         raise KeyboardInterrupt
     signal.signal(signal.SIGTERM, terminate)
-    print(f'Biocover listening: {args.host}:{args.port} (접속: http://<Jetson-IP>:{args.port}; 시작 전 미저장)', flush=True)
+    print(f'Biocover listening: {args.host}:{args.port} (접속: http://<Jetson-IP>:{args.port}; 측정 상태: {engine.state})', flush=True)
     try:
         server.serve_forever()
     except KeyboardInterrupt:

@@ -1,4 +1,5 @@
 import io
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import sys
 import tempfile
@@ -8,7 +9,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(ROOT/'scripts'))
 sys.path.insert(0,str(ROOT/'web'))
-from mixer import Detector, Mixer, Settings
+from mixer import Detector, RawDetector, Mixer, Settings
 from motor import Motor
 from engine import Engine
 from app import create_app
@@ -20,7 +21,8 @@ def sample(a=100,b=100,c=100,**extra):
 
 class DetectorTests(unittest.TestCase):
     def detector(self, **changes):
-        return Detector(Settings().updated({'window_s':15, **changes}))
+        return RawDetector(Settings().updated({'window_s':15, 'rise_delta':30,
+            'spread_delta':40, 'rise_pct':15, 'sigma':3, 'confirmations':2, **changes}))
     def warm(self,d,values=(100,100,100)):
         for at in (0,5,10):
             self.assertFalse(d.observe(sample(*values),at)['ready'])
@@ -71,12 +73,71 @@ class DetectorTests(unittest.TestCase):
             with self.assertRaises(ValueError):Settings().updated(changes)
 
 
+class RelativeDetectorTests(unittest.TestCase):
+    def make(self, values):
+        d=Detector(Settings(window_s=30,smoothing_s=15,confirmations=3))
+        for t in range(0,45,5):
+            self.assertFalse(d.observe(sample(*values),t)['trigger'])
+        return d
+
+    def test_diverging_changes_trigger_even_when_absolute_spread_shrinks(self):
+        d=self.make((150,300,225))
+        results=[d.observe(sample(210,270,225),t) for t in range(45,71,5)]
+        hit=next(r for r in results if r['trigger'])
+        self.assertIn('spread',hit['reason'])
+        self.assertLess(hit['spread'],150)
+        self.assertGreater(hit['spread_change_pct'],40)
+
+    def test_common_percentage_rise_has_no_relative_spread(self):
+        d=self.make((150,300,225))
+        results=[d.observe(sample(180,360,270),t) for t in range(45,71,5)]
+        hit=next(r for r in results if r['trigger'])
+        self.assertEqual(hit['reason'],'rise')
+        self.assertAlmostEqual(hit['spread_change_pct'],0)
+
+    def test_offsets_and_an_isolated_large_spike_are_rejected(self):
+        d=self.make((150,300,225))
+        for t in range(45,150,5):
+            row=sample(150,900,225) if t==60 else sample(150,300,225)
+            self.assertFalse(d.observe(row,t)['trigger'])
+
+    def test_invalid_sample_and_gap_require_fresh_baseline(self):
+        d=self.make((150,300,225))
+        self.assertFalse(d.observe(sample(b=0),45)['valid'])
+        self.assertFalse(d.observe(sample(),50)['ready'])
+        d=self.make((150,300,225))
+        self.assertFalse(d.observe(sample(),100)['ready'])
+
+    def test_seed_does_not_replay_triggers_and_needs_fresh_confirmations(self):
+        d=Detector(Settings(window_s=30,smoothing_s=0,confirmations=2))
+        wall=datetime.now(timezone.utc)
+        rows=[sample(150,300,225,timestamp=(wall-timedelta(seconds=45-t)).isoformat())
+              for t in range(0,45,5)]
+        d.seed_history(rows,100,wall)
+        first=d.observe(sample(180,360,270),100)
+        self.assertTrue(first['ready']);self.assertFalse(first['trigger'])
+        self.assertEqual(first['confirmations'],1)
+        self.assertTrue(d.observe(sample(180,360,270),105)['trigger'])
+        self.assertFalse(d.observe(sample(180,360,270),125)['ready'])
+
+    def test_seed_stops_at_invalid_samples_and_missing_intervals(self):
+        for bad_kind in ('invalid','gap'):
+            d=Detector(Settings(window_s=30,smoothing_s=0))
+            wall=datetime.now(timezone.utc)
+            rows=[sample(150,300,225,timestamp=(wall-timedelta(seconds=50-t)).isoformat())
+                  for t in range(0,50,5)]
+            if bad_kind=='invalid':rows[-2]['mq3']=0
+            else:del rows[-4:-1]
+            d.seed_history(rows,100,wall)
+            self.assertFalse(d.observe(sample(150,300,225),100)['ready'])
+
+
 class MixerTests(unittest.TestCase):
     def setUp(self):
         self.now=0
         self.motor=Motor();self.motor.online();self.motor.feed({'kind':'status','angle':None})
         self.mixer=Mixer(self.motor,clock=lambda:self.now,threaded=False)
-        self.mixer.configure({'window_s':15,'cooldown_s':10})
+        self.mixer.configure({'window_s':15,'smoothing_s':0,'confirmations':2,'cooldown_s':10})
         self.output=patch('sys.stdout',new=io.StringIO());self.output.start()
     def tearDown(self):self.mixer.close();self.output.stop()
     def observe(self,at,row=None):

@@ -15,11 +15,13 @@
 </section>
 <section id="mixer-panel" class="mixer-panel" aria-label="유출 센서 자동 교반">
 <div class="mixer-heading"><h2>자동 교반 · 유출 #2·#3·#4 <span id="mixer-state" class="badge">꺼짐</span></h2><div class="buttons"><button id="mixer-enable" class="primary" disabled>자동 교반 켜기</button><button id="mixer-disable" disabled>자동 교반 끄기</button></div></div>
-<p>평소보다 센서 간 격차가 커지거나 평균값이 급상승하면 교반합니다. 측정 중에만 동작하며 일시정지·정지·수동 각도 전송 시 자동 교반이 꺼집니다.</p>
+<p id="mixer-description">각 센서의 평소 대비 변화율이 서로 벌어지거나 함께 상승하면 교반합니다. 측정 중에만 동작하며 일시정지·정지·수동 각도 전송 시 자동 교반이 꺼집니다.</p>
 <p id="mixer-status" role="status">평소 기준 수집 후 판단합니다.</p><p id="mixer-metrics"></p>
 <details><summary>감지·동작 설정</summary><form id="mixer-settings"><div class="mixer-grid">
 <label>비교 시간 (초)<input id="mix-window_s" type="number" min="15" max="600" step="1" required></label>
-<label>격차 증가 최소값 (raw)<input id="mix-spread_delta" type="number" min="1" max="1023" step="1" required></label>
+<label data-relative-setting>최근값 중앙값 구간 (초)<input id="mix-smoothing_s" type="number" min="0" max="60" step="1"></label>
+<label data-relative-setting>센서별 변화율 차이 (%p)<input id="mix-spread_pct" type="number" min="0.1" max="1000" step="0.1"></label>
+<label><span id="mix-spread-label">편차 감지 시 센서 변화 최소값 (raw)</span><input id="mix-spread_delta" type="number" min="1" max="1023" step="1" required></label>
 <label>평균 상승 최소값 (raw)<input id="mix-rise_delta" type="number" min="1" max="1023" step="1" required></label>
 <label>평균 상승률 (%)<input id="mix-rise_pct" type="number" min="0" max="100" step="0.1" required></label>
 <label>평소 변동 배수 (표준편차)<input id="mix-sigma" type="number" min="0" max="10" step="0.1" required></label>
@@ -28,7 +30,7 @@
 <label>위치별 대기 (초)<input id="mix-dwell_s" type="number" min="1" max="60" step="0.1" required></label>
 <label>각도 순서 (쉼표로 구분)<input id="mix-angles" type="text" required placeholder="0, 180, 0"></label>
 </div><button id="mixer-save" type="submit">설정 저장</button></form>
-<p>감지 기준은 보정 전 raw를 이용한 시작 설정입니다. 평소 변동을 확인하며 조정하세요. 재구동 대기 후 기준을 다시 수집합니다. 설정은 서비스 재시작 시 기본값으로 돌아갑니다.</p></details>
+<p>감지 기준은 보정 전 raw를 이용한 시작 설정입니다. 평소 변동을 확인하며 조정하세요. 재구동 대기 후 기준을 다시 수집합니다. 진행 중인 세션의 설정은 재시작 후 복원됩니다.</p></details>
 <p id="mixer-message" role="status">자동 구동은 켜기 버튼을 눌렀을 때만 활성화됩니다.</p><ul id="mixer-events" class="mixer-events" aria-label="최근 자동 교반 동작"></ul>
 </section>
 <section class="section-title"><div><h2>변화 추이</h2><p>오래된 값은 표시 범위 밖으로 이동합니다. 결측 구간은 선으로 연결하지 않습니다.</p></div><label>표시 범위 <select id="window"><option value="300">최근 5분</option><option value="600">최근 10분</option><option value="1800">최근 30분</option><option value="3600">최근 1시간</option><option value="7200">최근 2시간</option><option value="all">전체</option></select></label></section>

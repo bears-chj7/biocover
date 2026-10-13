@@ -9,3 +9,5 @@
 .mixer-panel input:focus-visible{outline:3px solid #98c9b7;outline-offset:2px}
 .mixer-events{padding-left:18px;max-height:150px;overflow:auto;font-size:11px;color:var(--muted);line-height:1.8}
 @media(max-width:650px){.mixer-panel{padding:18px 14px}.mixer-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mixer-heading{align-items:flex-start;flex-direction:column}.mixer-heading .buttons{width:100%}}
+
+[data-relative-setting][hidden] { display: none; }
